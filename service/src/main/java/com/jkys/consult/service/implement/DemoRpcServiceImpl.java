@@ -3,8 +3,8 @@ package com.jkys.consult.service.implement;
 import com.jkys.consult.service.DemoRpcService;
 
 /**
- * @author huadi
- * @version 2017/8/24
+ * @author liming
+ * @version 2020/3/26
  */
 @Deprecated
 public class DemoRpcServiceImpl implements DemoRpcService {
@@ -21,4 +21,10 @@ public class DemoRpcServiceImpl implements DemoRpcService {
 //    public Demo getByCondition(Demo demo) {
 //        return demo;
 //    }
+
+  // saveCargo
+//        cargoRepository.save(cargo);
+
+  // post domain event
+//        domainEventPublisher.publish(new CargoBookDomainEvent(cargo));
 }

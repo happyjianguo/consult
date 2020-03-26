@@ -9,8 +9,24 @@ import lombok.Setter;
 @Setter
 public class Result<T> {
 
+  /**
+   * 执行是否成功
+   */
+  private boolean success = false;
+
+  /**
+   * 执行结果返回的code 见ResultCode
+   */
   private int code;
-  private String msg;
+
+  /**
+   * 执行结果返回的消息描述
+   */
+  private String message;
+
+  /**
+   * 默认的返回结果
+   */
   private T data;
 
   /**
@@ -29,19 +45,20 @@ public class Result<T> {
 
   private Result(T data) {
     this.code = SUCCESS.getCode();
-    this.msg = SUCCESS.getMsg();
+    this.message = SUCCESS.getMsg();
     this.data = data;
+    this.success = true;
   }
 
   private Result(int code, String msg) {
     this.code = code;
-    this.msg = msg;
+    this.message = msg;
   }
 
   private Result(CodeMsg codeMsg) {
     if (codeMsg != null) {
       this.code = codeMsg.getCode();
-      this.msg = codeMsg.getMsg();
+      this.message = codeMsg.getMsg();
     }
   }
 

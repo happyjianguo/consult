@@ -1,11 +1,11 @@
 package com.jkys.consult.common.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.mybatisplus.common.SuperEntity;
-import com.jkys.consult.mybatisplus.validate.MyLength;
-import com.jkys.consult.mybatisplus.validate.groups.Create;
-import com.jkys.consult.mybatisplus.validate.groups.Update;
-import com.jkys.consult.mybatisplus.validate.payload.Severity;
+import com.jkys.consult.infrastructure.db.mybatisplus.common.SuperEntity;
+import com.jkys.consult.infrastructure.db.mybatisplus.validate.MyLength;
+import com.jkys.consult.infrastructure.db.mybatisplus.validate.groups.Create;
+import com.jkys.consult.infrastructure.db.mybatisplus.validate.groups.Update;
+import com.jkys.consult.infrastructure.db.mybatisplus.validate.payload.Severity;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

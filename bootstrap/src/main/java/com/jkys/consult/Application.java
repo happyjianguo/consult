@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * @author huadi
- * @version 2017/8/24
+ * @version 2020/3/26
  */
 @ImportResource({"classpath*:/rpc-*.xml"})
 @PropertySource({"file:/data/www/91jkys/config/consult.properties",
@@ -21,7 +21,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 //@SpringBootApplication(exclude = {io.shardingsphere.shardingjdbc.spring.boot.SpringBootConfiguration.class/*, DataSourceAutoConfiguration.class*/})
 @EnableScheduling
 @EnableAsync
-@MapperScan(basePackages = {"com.jkys.consult.dao"})
+@MapperScan(basePackages = {"com.jkys.consult.infrastructure.db.mapper"})
 public class Application {
 
   public static void main(String[] args) {

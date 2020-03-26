@@ -22,6 +22,19 @@
       <groupId>com.jkys.usercenter</groupId>
       <artifactId>uc-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.jkys</groupId>
+      <artifactId>coincenter-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.jkys</groupId>
+      <artifactId>ih-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jkys.imserver</groupId>
+      <artifactId>imserver.client</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.springframework.boot</groupId>

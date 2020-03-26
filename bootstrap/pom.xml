@@ -110,7 +110,7 @@
           <logPath>logs</logPath>
           <appName>template</appName>
           <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %l - %m%n</pattern>
-          <sqlPackage>com.jkys.consult.dao</sqlPackage>
+          <sqlPackage>com.jkys.consult.mapper</sqlPackage>
         </configuration>
       </plugin>
     </plugins>

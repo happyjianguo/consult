@@ -3,7 +3,7 @@ package com.jkys.consult.web.controller;
 /**
  * RESTful风格controller
  *
- * @author huadi
+ * @author liming
  */
 //@RestController
 //@RequestMapping("/rest") // 所有此controller下的mapping前缀

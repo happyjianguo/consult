@@ -4,8 +4,8 @@ import com.jkys.consult.web.controller.common.annotation.Anonymous;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * @author huadi
- * @version 2017/8/25
+ * @author liming
+ * @version 2020/3/26
  */
 //@RestController
   @Deprecated

@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 /**
  * 标记controller的方法需要以管理员身份访问。
  *
- * @author huadi
+ * @author liming
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

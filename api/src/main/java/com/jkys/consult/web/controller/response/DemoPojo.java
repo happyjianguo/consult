@@ -7,6 +7,7 @@ import java.util.List;
  * @author xiecw
  * @date 2019/4/9
  */
+@Deprecated
 public class DemoPojo {
 
   private Integer id;

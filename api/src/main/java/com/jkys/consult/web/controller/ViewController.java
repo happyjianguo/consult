@@ -10,8 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * springmvc请求返回pojo、freemarker例子
  *
- * @author huadi
- * @version 2017/8/24
+ * @author liming
+ * @version 2020/3/26
  */
 //@RestController
 //@RequestMapping("/view")
