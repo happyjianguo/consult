@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:phobos="http://jkys.com/mars/phobos"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.springframework.org/schema/beans"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://jkys.com/mars/phobos
+       http://jkys.com/mars/phobos.xsd">
+
+  <!--RPC服务监听端口号-->
+  <phobos:server bindPort="8092"/>
+
+  <!--注意这里是实现类-->
+  <phobos:provide id="demoRpcService" class="com.jkys.consult.service.implement.DemoRpcServiceImpl"/>
+</beans>
