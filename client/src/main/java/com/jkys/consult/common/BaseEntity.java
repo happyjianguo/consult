@@ -35,13 +35,13 @@ public class BaseEntity<T extends Model<?>> extends Model<T> {
 //    private String createUser;
 
   @TableField(value = "gmt_create", fill = FieldFill.INSERT)
-  private LocalDateTime createTime;
+  private LocalDateTime gmtCreate;
 
 //    @TableField(value = "update_user", fill = FieldFill.INSERT_UPDATE)
 //    private String updateUser;
 
   @TableField(value = "gmt_modify", fill = FieldFill.INSERT_UPDATE)
-  private LocalDateTime modifyTime;
+  private LocalDateTime gmtModify;
 
 //    @Version
 //    @TableField(value = "version", fill = FieldFill.INSERT_UPDATE, update = "%s+1")

@@ -16,6 +16,12 @@
 
 1. 病人和医生信息从哪取的？
 
+2. 特殊医生组具体逻辑
+
+3. 发IM消息
+
+4. 修改rpc*.xml
+
 UserCenterUserService 用户信息
 
 UserExtraReadService 额外信息

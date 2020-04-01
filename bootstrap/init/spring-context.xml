@@ -1,0 +1,62 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd">
+
+<!--    <bean id="properties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">-->
+<!--        <property name="locations">-->
+<!--            <array>-->
+<!--                <value>classpath:application.properties</value>-->
+<!--                <value>file:/data/www/91jkys/config/redis.properties</value>-->
+<!--                <value>file:/data/www/91jkys/config/shine.properties</value>-->
+<!--                <value>file:/data/www/91jkys/config/kafka.properties</value>-->
+<!--            </array>-->
+<!--        </property>-->
+<!--    </bean>-->
+
+    <!--基本注入 -->
+<!--    <context:property-placeholder properties-ref="properties" />-->
+
+    <!-- Enables the Spring Task @Scheduled programming model -->
+    <task:executor id="executor" pool-size="5" />
+    <task:scheduler id="scheduler" pool-size="10" />
+    <task:annotation-driven executor="executor" scheduler="scheduler" />
+
+    <!-- Jedis -->
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg type="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+            <bean class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+                <property name="maxTotal" value="20"/>
+            </bean>
+        </constructor-arg>
+        <constructor-arg name="host" type="java.lang.String" value="${redis.host}"/>
+        <constructor-arg name="port" type="int" value="${redis.port}"/>
+        <!--<constructor-arg name="timeout" type="int" value="${redis.timeout}"/>-->
+        <!--<constructor-arg  name="password" type="java.lang.String" value="${redis.password}"/>-->
+    </bean>
+
+    <bean id="executor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="10"/>
+        <property name="maxPoolSize" value="50"/>
+        <property name="queueCapacity" value="200"/>
+    </bean>
+
+<!--    <bean id="kafkaReceiver" class="com.jkys.common.kafkaUtil.KafkaReceiver" init-method="init">-->
+<!--        <property name="zookeeper" value="${kafka.zookeeper}"/>-->
+<!--        <property name="group" value="disease"/>-->
+<!--    </bean>-->
+
+    <bean class="com.jkys.common.simplemsg.autoconfigure.SimpleMsgAutoConfiguration" />
+    <bean class="com.jkys.common.simplemsg.anno.field.CreateMsgAnnotationBeanPostProcessor"/>
+
+    <bean id="shine-advisoryFinish" class="com.jkys.common.simplemsg.util.SimpleMsgSender">
+        <property name="kafkaSender" ref="kafkaSender"/>
+    </bean>
+<!--    <bean id="shine-advisoryStatusChange" class="com.jkys.common.simplemsg.util.SimpleMsgSender">-->
+<!--        <property name="kafkaSender" ref="kafkaSender"/>-->
+<!--    </bean>-->
+    <bean id="kafkaSender" class="com.jkys.common.kafkaUtil.KafkaSender" init-method="init">
+        <property name="brokerListStr" value="${kafka.broker.list}"/>
+    </bean>
+</beans>

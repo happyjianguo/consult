@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:phobos="http://jkys.com/mars/phobos"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://jkys.com/mars/phobos
+       http://jkys.com/mars/phobos.xsd">
+
+
+    <phobos:server bindPort="6026"/>
+
+    <phobos:provide id="patientAdvisoryService" class="com.jkys.shine.service.impl.PatientAdvisoryServiceImpl"/>
+    <phobos:provide id="patientAdvisoryInfoService" class="com.jkys.shine.service.impl.PatientAdvisoryInfoServiceImpl"/>
+    <phobos:provide id="patientAdvisoryOrderService" class="com.jkys.shine.service.impl.PatientAdvisoryOrderServiceImpl"/>
+    <phobos:provide id="doctorIncomeService" class="com.jkys.shine.service.impl.DoctorIncomeServiceImpl"/>
+    <phobos:provide id="storeAdvisoryApiServiceImpl" class="com.jkys.shine.service.impl.StoreAdvisoryApiServiceImpl"/>
+    <phobos:provide id="storeAdvisoryRpcServiceImpl" class="com.jkys.shine.service.impl.StoreAdvisoryRpcServiceImpl"/>
+    <phobos:provide id="advisoryQueryRpcService" class="com.jkys.shine.service.rpc.AdvisoryQueryRpcServiceImpl"/>
+    <phobos:provide id="advisoryWriteRpcService" class="com.jkys.shine.service.rpc.AdvisoryWriteRpcServiceImpl"/>
+</beans>
