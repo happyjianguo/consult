@@ -51,7 +51,7 @@ public class OrderPersistStateMachineHandler extends LifecycleObjectSupport {
    *
    * @return 如果事件被接受处理，返回true
    */
-  public boolean handleEventWithState(Message<OrderEvents> event/*, OrderStatus state*/) {
+  public boolean handleEventWithState(Message<OrderEvents> event, OrderStatus state) {
     StateMachine<OrderStatus, OrderEvents> stateMachine = orderStatusMachineFactory
         .getStateMachine();
     stateMachine.getStateMachineAccessor()
@@ -70,11 +70,9 @@ public class OrderPersistStateMachineHandler extends LifecycleObjectSupport {
     // 方式2：
     //恢复
     String orderId = event.getHeaders().get(Constants.BIZ_CODE).toString();
-    Order order = new Order();
-    order.setOrderId(orderId);
 
     try {
-      orderPersister.restore(stateMachine, order);
+      orderPersister.restore(stateMachine, new Order().setOrderId(orderId));
     } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());

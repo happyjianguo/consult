@@ -13,6 +13,8 @@ import com.jkys.consult.infrastructure.event.GuavaDomainEventPublisher;
 import com.jkys.consult.statemachine.constant.Constants;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.consult.statemachine.enums.ConsultStatus;
+import com.jkys.consult.statemachine.enums.OrderEvents;
+import com.jkys.consult.statemachine.enums.OrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -31,8 +33,25 @@ public class ConsultActionConfig {
    *
    * @return action对象
    */
-  @Bean(name = "errorHandlerAction")
-  public Action<ConsultStatus, ConsultEvents> errorHandlerAction() {
+  @Bean(name = "consultErrorHandlerAction")
+  public Action<ConsultStatus, ConsultEvents> consultErrorHandlerAction() {
+
+    return context -> {
+      RuntimeException exception = (RuntimeException) context.getException();
+      log.error("stateMachine execute error = ", exception);
+      context.getStateMachine()
+          .getExtendedState().getVariables()
+          .put(RuntimeException.class, exception);
+    };
+  }
+
+  /**
+   * 异常处理Action
+   *
+   * @return action对象
+   */
+  @Bean(name = "orderErrorHandlerAction")
+  public Action<OrderStatus, OrderEvents> orderErrorHandlerAction() {
 
     return context -> {
       RuntimeException exception = (RuntimeException) context.getException();
@@ -48,49 +67,49 @@ public class ConsultActionConfig {
    * @return
    */
   @Bean(name = "consultStartAction")
-  public Action<ConsultStatus, ConsultEvents> consultRefundAction(){
+  public Action<OrderStatus, OrderEvents> consultRefundAction(){
 
     return context -> {
       String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
 
       Consult consult = new Consult();
+      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
       consult.setConsultId(bizcode);
 
       ConsultDomainEvent event = ConsultDomainEvent.builder()
           .consult(consult)
           .event(START)
           .build();
-      event.setConsult(consult);
 
       publisher.publish(event);
     };
   }
 
   /**
-   * 订单支付触发咨询单开启
+   * 订单取消触发咨询单取消
    * @return
    */
   @Bean(name = "consultCancelAction")
-  public Action<ConsultStatus, ConsultEvents> consultCancelAction(){
+  public Action<OrderStatus, OrderEvents> consultCancelAction(){
 
     return context -> {
       String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
 
       Consult consult = new Consult();
+      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
       consult.setConsultId(bizcode);
 
       ConsultDomainEvent event = ConsultDomainEvent.builder()
           .consult(consult)
           .event(CANCEL)
           .build();
-      event.setConsult(consult);
 
       publisher.publish(event);
     };
   }
 
   /**
-   * 订单退款
+   * 中止咨询单触发订单退款
    * @return
    */
   @Bean(name = "orderRefundAction")
@@ -101,20 +120,20 @@ public class ConsultActionConfig {
       String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
 
       Order order = new Order();
-      order.setConsultId(bizcode);
+      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
+      order.setOrderId(bizcode);
 
       OrderDomainEvent event = OrderDomainEvent.builder()
           .order(order)
           .event(REFUND)
           .build();
-      event.setOrder(order);
 
       publisher.publish(event);
     };
   }
 
   /**
-   * 创建订单
+   * 创建咨询单触发创建订单
    * @return
    */
   @Bean(name = "orderCreateAction"/*, autowire = Autowire.BY_TYPE*/)
@@ -128,13 +147,13 @@ public class ConsultActionConfig {
 //      StateMachine<ConsultStatus, ConsultEvents> stateMachine = context.getStateMachine();
 
       Order order = new Order();
-      order.setConsultId(bizcode);
+      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
+      order.setOrderId(bizcode);
 
       OrderDomainEvent event = OrderDomainEvent.builder()
           .order(order)
           .event(CREATE)
           .build();
-      event.setOrder(order);
 
       publisher.publish(event);
 //    MyStateMachineUtils.setCurrentState(stateMachine, ConsultStatus.PROCESSING);

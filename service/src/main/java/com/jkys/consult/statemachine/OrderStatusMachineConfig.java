@@ -5,9 +5,11 @@ import com.jkys.consult.statemachine.enums.OrderEvents;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import java.util.EnumSet;
 import java.util.Optional;
+import javax.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineConfigurationConfigurer;
@@ -31,6 +33,15 @@ public class OrderStatusMachineConfig extends
    * 订单状态机ID
    */
 //  public static final String orderStatusMachineId = "orderStatusMachineId";
+
+  @Resource(name = "orderErrorHandlerAction")
+  private Action<OrderStatus, OrderEvents> orderErrorHandlerAction;
+
+  @Resource(name = "consultStartAction")
+  private Action<OrderStatus, OrderEvents> consultStartAction;
+
+  @Resource(name = "consultCancelAction")
+  private Action<OrderStatus, OrderEvents> consultCancelAction;
 
   @Override
   public void configure(StateMachineConfigurationConfigurer<OrderStatus, OrderEvents> config)
@@ -66,9 +77,11 @@ public class OrderStatusMachineConfig extends
         .and()
         .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.PAYED)
         .event(OrderEvents.PAY)
+        .action(consultStartAction, orderErrorHandlerAction)
         .and()
-        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.CANCELED).event(
-        OrderEvents.CANCEL)
+        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.CANCELED)
+        .event(OrderEvents.CANCEL)
+        .action(consultCancelAction, orderErrorHandlerAction)
         .and()
         .withExternal().source(OrderStatus.PAYED).target(OrderStatus.REFUNDED)
         .event(OrderEvents.REFUND);

@@ -22,10 +22,33 @@ public class DoctorInfoModel {
    * price : 100
    */
 
+  /**
+   * 医生图片
+   */
   private String imageUrl;
-  private String name;
+
+  /**
+   * 医生姓名
+   */
+  private String doctorName;
+
+  /**
+   * 医生职称
+   */
   private String title;
+
+  /**
+   * 医生科室
+   */
   private String department;
+
+  /**
+   * 医生医院
+   */
   private String hospital;
+
+  /**
+   * 医生咨询价格
+   */
   private int price;
 }

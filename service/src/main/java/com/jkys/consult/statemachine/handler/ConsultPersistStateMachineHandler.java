@@ -52,7 +52,7 @@ public class ConsultPersistStateMachineHandler extends LifecycleObjectSupport {
    *
    * @return 如果事件被接受处理，返回true
    */
-  public boolean handleEventWithState(Message<ConsultEvents> event/*, ConsultStatus state*/) {
+  public boolean handleEventWithState(Message<ConsultEvents> event, ConsultStatus state) {
     StateMachine<ConsultStatus, ConsultEvents> stateMachine = consultStatusMachineFactory.getStateMachine();
     stateMachine.getStateMachineAccessor()
         .doWithAllRegions(function -> function.addStateMachineInterceptor(interceptor));
@@ -70,11 +70,9 @@ public class ConsultPersistStateMachineHandler extends LifecycleObjectSupport {
     // 方式2：
     //恢复
     String consultId = event.getHeaders().get(Constants.BIZ_CODE).toString();
-    Consult consult = new Consult();
-    consult.setConsultId(consultId);
 
     try {
-      consultPersister.restore(stateMachine, consult);
+      consultPersister.restore(stateMachine, new Consult().setConsultId(consultId));
     } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());

@@ -1,5 +1,7 @@
 package com.jkys.consult.statemachine.utils;
 
+import com.jkys.consult.common.bean.Consult;
+import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.statemachine.constant.Constants;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.consult.statemachine.enums.OrderEvents;
@@ -19,6 +21,22 @@ public class MessageUtil {
     Message<OrderEvents> eventMsg = MessageBuilder.withPayload(event)
         // key 与 status change 时不同，对应的model也不同
         .setHeader(Constants.BIZ_CODE, bizcode)
+        .build();
+    return eventMsg;
+  }
+
+  public static Message<ConsultEvents> getMessage(ConsultEvents event, Consult consult){
+    Message<ConsultEvents> eventMsg = MessageBuilder.withPayload(event)
+        // key 与 status change 时不同，对应的model也不同
+        .setHeader(Constants.CONSULT, consult)
+        .build();
+    return eventMsg;
+  }
+
+  public static Message<OrderEvents> getMessage(OrderEvents event, Order order){
+    Message<OrderEvents> eventMsg = MessageBuilder.withPayload(event)
+        // key 与 status change 时不同，对应的model也不同
+        .setHeader(Constants.ORDER, order)
         .build();
     return eventMsg;
   }

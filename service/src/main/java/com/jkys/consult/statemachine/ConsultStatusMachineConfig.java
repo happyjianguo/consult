@@ -32,8 +32,8 @@ public class ConsultStatusMachineConfig extends
 //  @Resource(name = "consultPersister")
 //  private StateMachinePersister<ConsultStatus, ConsultEvents, Consult> consultPersister;
 
-  @Resource(name = "errorHandlerAction")
-  private Action<ConsultStatus, ConsultEvents> errorHandlerAction;
+  @Resource(name = "consultErrorHandlerAction")
+  private Action<ConsultStatus, ConsultEvents> consultErrorHandlerAction;
 
   @Resource(name = "orderCreateAction")
   private Action<ConsultStatus, ConsultEvents> orderCreateAction;
@@ -80,7 +80,7 @@ public class ConsultStatusMachineConfig extends
         .withExternal()
         .source(ConsultStatus.INIT).target(ConsultStatus.WAIT_FOR_PROCESS)
         .event(ConsultEvents.CREATE)
-        .action(orderCreateAction, errorHandlerAction)
+        .action(orderCreateAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.WAIT_FOR_PROCESS).target(ConsultStatus.PROCESSING)
@@ -107,17 +107,17 @@ public class ConsultStatusMachineConfig extends
         .withExternal()
         .source(ConsultStatus.PROCESSING).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
-        .action(orderRefundAction, errorHandlerAction)
+        .action(orderRefundAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
-        .action(orderRefundAction, errorHandlerAction)
+        .action(orderRefundAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.STILL_WAIT).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
-        .action(orderRefundAction, errorHandlerAction)
+        .action(orderRefundAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.PROCESSING).target(ConsultStatus.COMPLETED)

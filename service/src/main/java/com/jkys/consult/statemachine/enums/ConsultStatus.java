@@ -1,31 +1,45 @@
 package com.jkys.consult.statemachine.enums;
 
+import static com.jkys.consult.enums.ConsultModelStatus.CANCEL;
+import static com.jkys.consult.enums.ConsultModelStatus.COMPLETE;
+import static com.jkys.consult.enums.ConsultModelStatus.INPROCESS;
+import static com.jkys.consult.enums.ConsultModelStatus.REFUND;
+import static com.jkys.consult.enums.ConsultModelStatus.UNPAY;
+
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.jkys.consult.enums.ConsultModelStatus;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 
 public enum ConsultStatus {
-  INIT(1, "待咨询"),
-  WAIT_FOR_PROCESS(2, "待咨询"),
+  INIT(UNPAY,1, "初始"),
+  WAIT_FOR_PROCESS(UNPAY, 2, "待咨询"),
 
-  PROCESSING(3, "咨询中"),
-  PROCESS_INIT(31, "咨询中初始状态"),
-  MAY_CHANGE_DOCTOR(32, "可更换医生状态"),
-  STILL_WAIT(33, "继续等待"),
+  PROCESSING(INPROCESS, 3, "咨询中"),
+  PROCESS_INIT(INPROCESS, 31, "咨询中初始状态"),
+  MAY_CHANGE_DOCTOR(INPROCESS,32, "可更换医生状态"),
+  STILL_WAIT(INPROCESS, 33, "继续等待"),
 
-  CANCELED(4, "已取消"),
-  COMPLETED(5, "已完成"),
-  TERMINATED(6, "已终止");
+  CANCELED(CANCEL, 4, "已取消"),
+  COMPLETED(COMPLETE, 5, "已完成"),
+  TERMINATED(REFUND, 6, "已终止");
 
+
+  @Getter
+  private ConsultModelStatus type;
   @Getter
   int code;
   @Getter
   @EnumValue
   String status;
 
-  ConsultStatus(int code, String status) {
+  ConsultStatus(ConsultModelStatus type, int code, String status) {
+    this.type = type;
     this.code = code;
     this.status = status;
   }
@@ -52,6 +66,20 @@ public enum ConsultStatus {
   public static boolean equals(String status, ConsultStatus statusEnum) {
     return StringUtils.equalsIgnoreCase(status, statusEnum.getStatus());
 
+  }
+
+  /**
+   * type-->statusEnum
+   */
+  public static List<ConsultStatus> getByType(ConsultModelStatus type) {
+    List<ConsultStatus> consultStatusList = Arrays.asList(ConsultStatus.values())
+        .parallelStream()
+        .filter(statusEnum -> type.equals(statusEnum.getType()))
+        .collect(Collectors.toList());
+    if (!CollectionUtils.isEmpty(consultStatusList)) {
+      return consultStatusList;
+    }
+    return null;
   }
 
   /**

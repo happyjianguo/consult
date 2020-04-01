@@ -31,7 +31,7 @@ public class ConsultInfoModel {
   /**
    * 当前咨询状态,根据咨询单和订单获取
    */
-  private String state;
+  private String status;
 
   /**
    * 订单号

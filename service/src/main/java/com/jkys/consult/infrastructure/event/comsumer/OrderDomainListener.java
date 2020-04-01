@@ -1,7 +1,6 @@
 package com.jkys.consult.infrastructure.event.comsumer;
 
 import static com.jkys.consult.statemachine.enums.OrderEvents.CREATE;
-import static com.jkys.consult.statemachine.enums.OrderEvents.PAY;
 import static com.jkys.consult.statemachine.enums.OrderEvents.REFUND;
 
 import com.google.common.eventbus.EventBus;
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OrderListener {
+public class OrderDomainListener {
 
 //    @Autowired
 //    private DemoService demoService;
@@ -48,12 +47,12 @@ public class OrderListener {
     OrderEvents event = domainEvent.getEvent();
     Order order = domainEvent.getOrder();
 
+    // 需要订单持久化操作
     if (event.equals(CREATE)) {
       orderLogic.createOrder(domainEvent.getOrder());
+      // 需要订单退款操作
     } else if (event.equals(REFUND)) {
       orderLogic.refundOrder(domainEvent.getOrder());
-    } else if (event.equals(PAY)) {
-      orderLogic.payOrder(domainEvent.getOrder());
     }
     orderStateLogic.handleAction(event, order);
 

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConsultListener {
+public class ConsultDomainListener {
 
 //    @Autowired
 //    private DemoService demoService;
@@ -37,9 +37,8 @@ public class ConsultListener {
     public void handleEvent(ConsultDomainEvent domainEvent) {
         ConsultEvents event = domainEvent.getEvent();
         Consult consult = domainEvent.getConsult();
-        String consultId = consult.getConsultId();
 
-        consultStateLogic.handleAction(event, consultId);
+        consultStateLogic.handleAction(event, consult);
     }
 
     @Subscribe

@@ -46,7 +46,7 @@ public class OrderLogicImpl implements OrderLogic {
 
   @Override
   public Boolean createOrder(Order order) {
-    return createOrder(order.getConsultId());
+    return createOrder(order.getOrderId());
   }
 
   @Override
@@ -75,7 +75,6 @@ public class OrderLogicImpl implements OrderLogic {
   public Boolean payOrder(Order order) {
     try {
       // TODO ---- 调用云币中心付款 ------> todoByliming
-
       orderStateLogic.handleAction(PAY, order);
     }catch (Exception e){
       e.printStackTrace();
@@ -85,19 +84,20 @@ public class OrderLogicImpl implements OrderLogic {
   }
 
   @Override
-  public Boolean createOrder(String consultId) {
+  public Boolean createOrder(String orderId) {
 //    StateMachine<OrderStates, OrderEvents> stateMachine = orderStateMachineBuilder
 //        .build(beanFactory);
 
     try {
       // TODO ---- 获取医生价格 ------> todoByliming
+      // TODO ---- 默认相同 ------> todoByliming
+      String consultId = orderId;
       Consult consult = consultService.selectByConsultId(consultId);
       Long doctorId = consult.getDoctorId();
       int price = doctorRemoteRpcService.getDoctorPrice(doctorId);
 
       // TODO ---- 是否要生成orderID ------> todoByliming
 //      final String orderId = sequenceGenerator.genBizCode();
-      final String orderId = consultId;
 
       Order order = Order.builder()
           .consultId(consultId)

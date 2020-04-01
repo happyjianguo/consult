@@ -15,10 +15,12 @@ public class BasePage<T> extends Page<T> {
 
   private static final long serialVersionUID = 7246194974980132237L;
 
-  private Integer pageNo;
-  private String pageSize;
+  private long pageNo;
+  private long pageSize;
 
-  public BasePage(long current, long size) {
-    super(current, size);
+  public BasePage(long pageNo, long pageSize) {
+    super(pageNo, pageSize);
+    this.pageNo = pageNo;
+    this.pageSize = pageSize;
   }
 }

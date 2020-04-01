@@ -12,16 +12,20 @@ import org.springframework.validation.annotation.Validated;
 @JsonRpcService("/consult")
 public interface ConsultInfoRpcService {
 
-//  @JsonRpcMethod("ConsultInfoRpcService.createConsult")
-  Boolean createConsult(@JsonRpcParam("doctorId") Long doctorId, @JsonRpcParam("patientId") Long patientId, @JsonRpcParam("consultType") Integer consultType);
+  //  @JsonRpcMethod("ConsultInfoRpcService.createConsult")
+  String createConsult(@JsonRpcParam("doctorId") Long doctorId,
+      @JsonRpcParam("patientId") Long patientId, @JsonRpcParam("consultType") Integer consultType);
 
 //  Boolean changeDoctor(String consultId);
 
   ConsultInfoModel searchConsultDetail(@JsonRpcParam("consultId") String consultId);
 
-  BasePage<ConsultInfoModel> searchConsultList(@JsonRpcParam("patientId") Long patientId, @JsonRpcParam("consultType") String consultType, @JsonRpcParam("consultState") String consultState);
+  BasePage<ConsultInfoModel> searchConsultList(@JsonRpcParam("patientId") Long patientId,
+      @JsonRpcParam("consultType") String consultType,
+      @JsonRpcParam("consultState") String consultState);
 
-  ConsultInfoModel currentConsultState(@JsonRpcParam("doctorId") Long doctorId, @JsonRpcParam("patientId") Long patientId);
+  String currentConsultState(@JsonRpcParam("doctorId") Long doctorId,
+      @JsonRpcParam("patientId") Long patientId);
 
   Boolean checkWhetherResponseIn12hours(@JsonRpcParam("consultId") String consultId);
 

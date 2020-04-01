@@ -6,7 +6,6 @@ import com.jkys.consult.logic.ConsultLogic;
 import com.jkys.consult.logic.ConsultStateLogic;
 import com.jkys.consult.model.ConsultInfoModel;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +20,9 @@ public class ConsultInfoRpcServiceImpl implements ConsultInfoRpcService {
   ConsultLogic consultLogic;
 
   @Override
-  public Boolean createConsult(Long doctorId, Long patientId, Integer consultType) {
+  public String createConsult(Long doctorId, Long patientId, Integer consultType) {
     String consultId = consultLogic.createConsult(doctorId, patientId, consultType);
-    return Optional.ofNullable(consultId).isPresent();
+    return consultId;
   }
 
   @Override
@@ -38,22 +37,23 @@ public class ConsultInfoRpcServiceImpl implements ConsultInfoRpcService {
 
   @Override
   public ConsultInfoModel searchConsultDetail(String consultId) {
-    return null;
+    return consultLogic.searchConsultDetail(consultId);
   }
 
   @Override
   public BasePage<ConsultInfoModel> searchConsultList(Long patientId, String consultType,
       String consultState) {
-    return null;
+    return consultLogic.searchConsultList(patientId, consultType, consultState);
   }
 
   @Override
-  public ConsultInfoModel currentConsultState(Long doctorId, Long patientId) {
-    return null;
+  public String currentConsultState(Long doctorId, Long patientId) {
+    return consultLogic.currentConsultState(doctorId, patientId);
   }
 
   @Override
   public Boolean checkWhetherResponseIn12hours(String consultId) {
+    // TODO ----  ------> todoByliming
     return null;
   }
 

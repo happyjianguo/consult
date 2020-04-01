@@ -5,4 +5,6 @@ public interface Constants {
   String CONSULT_CONTEXT_CREATE_KEY = "ConsultStatusMachineId";
   String ORDER_CONTEXT_CREATE_KEY = "orderStatusMachineId";
   String BIZ_CODE = "bizcode";
+  String CONSULT = "consult";
+  String ORDER = "order";
 }
