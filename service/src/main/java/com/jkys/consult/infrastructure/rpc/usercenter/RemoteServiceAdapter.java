@@ -1,6 +1,6 @@
 package com.jkys.consult.infrastructure.rpc.usercenter;
 
-import com.jkys.consult.common.model.User;
+import com.jkys.consult.common.bean.User;
 import com.jkys.consult.infrastructure.rpc.usercenter.dataobject.UserDO;
 
 //@Component

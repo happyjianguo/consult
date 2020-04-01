@@ -1,7 +1,7 @@
 package com.jkys.consult.infrastructure.db.mapper;
 
-import com.jkys.consult.common.model.User;
-import com.jkys.consult.infrastructure.db.mybatisplus.common.SuperMapper;
+import com.jkys.consult.common.bean.User;
+import com.jkys.consult.common.SuperMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Component;
 

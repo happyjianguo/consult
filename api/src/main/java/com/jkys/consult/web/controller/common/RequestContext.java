@@ -1,6 +1,6 @@
 package com.jkys.consult.web.controller.common;
 
-import com.jkys.consult.common.model.User;
+import com.jkys.consult.common.bean.User;
 import java.util.HashMap;
 import java.util.Map;
 

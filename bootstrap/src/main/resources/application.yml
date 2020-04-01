@@ -8,9 +8,9 @@ server:
   port: 9241
 
 spring:
-  profiles:
-    active:
-      include: mybatisplus
+#  profiles:
+#    active:
+#      include: mybatisplus
 
   freemarker:
     template-loader-path: classpath:/templates/ #模板加载路径 按需配置

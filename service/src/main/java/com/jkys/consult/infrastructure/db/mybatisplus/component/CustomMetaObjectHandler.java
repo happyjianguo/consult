@@ -21,14 +21,14 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
     //SysUser user = (SysUser)SecurityUtils.getSubject().getPrincipal();
 //		if (null == operator) {
 //    this.setInsertFieldValByName("createUser", "createUser", metaObject);
-    this.setInsertFieldValByName("createTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
-        metaObject);
+    this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
     log.info("LocalDateTime: {}", metaObject.getValue("createTime"));
 
 //    this.setInsertFieldValByName("updateUser", "updateUser", metaObject);
-    this.setInsertFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
-        metaObject);
+//    this.setInsertFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
+//        metaObject);
+    this.strictInsertFill(metaObject, "modifyTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
     log.info("LocalDateTime: {}", metaObject.getValue("modifyTime"));
 
@@ -42,7 +42,8 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
   public void updateFill(MetaObject metaObject) {
     log.info("更新的时候干点不可描述的事情");
 //    this.setUpdateFieldValByName("updateUser", "updateUser", metaObject);
-    this.setUpdateFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
-        metaObject);
+//    this.setUpdateFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
+//        metaObject);
+    this.strictInsertFill(metaObject, "modifyTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
   }
 }

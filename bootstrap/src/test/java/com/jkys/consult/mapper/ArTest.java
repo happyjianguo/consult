@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.jkys.consult.base.BaseTest;
-import com.jkys.consult.common.model.User;
+import com.jkys.consult.common.bean.User;
 import com.jkys.consult.infrastructure.db.mapper.UserMapper;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;

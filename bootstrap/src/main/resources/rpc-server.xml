@@ -11,5 +11,5 @@
   <phobos:server bindPort="8092"/>
 
   <!--注意这里是实现类-->
-  <phobos:provide id="demoRpcService" class="com.jkys.consult.service.implement.DemoRpcServiceImpl"/>
+  <phobos:provide id="demoRpcService" class="com.jkys.consult.soa.DemoRpcServiceImpl"/>
 </beans>
