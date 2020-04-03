@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
-public class stateTest extends BaseTest {
+public class processFlowTest extends BaseTest {
 
   @Autowired
   ConsultLogic consultLogic;
@@ -90,7 +90,7 @@ public class stateTest extends BaseTest {
    */
   @Test
   public void testCompleteConsult(){
-    boolean result = consultLogic.completeConsult(consultId);
+    boolean result = consultInfoRpcService.completeConsult(consultId);
     Assert.assertEquals(result, true);
   }
 

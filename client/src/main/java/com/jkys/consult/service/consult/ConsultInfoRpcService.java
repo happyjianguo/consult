@@ -27,7 +27,7 @@ public interface ConsultInfoRpcService {
   String currentConsultState(@JsonRpcParam("doctorId") Long doctorId,
       @JsonRpcParam("patientId") Long patientId);
 
-  Boolean checkWhetherResponseIn12hours(@JsonRpcParam("consultId") String consultId);
-
   Boolean completeConsult(@JsonRpcParam("consultId") String consultId);
+
+  Boolean checkWhetherResponseIn12hours(@JsonRpcParam("doctorId") Long doctorId, @JsonRpcParam("patientId") Long patientId);
 }

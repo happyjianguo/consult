@@ -8,7 +8,7 @@
        http://jkys.com/mars/phobos.xsd">
 
 
-    <phobos:server bindPort="6026"/>
+    <phobos:server bindPort="8092"/>
 
     <phobos:provide id="patientAdvisoryService" class="com.jkys.shine.service.impl.PatientAdvisoryServiceImpl"/>
     <phobos:provide id="patientAdvisoryInfoService" class="com.jkys.shine.service.impl.PatientAdvisoryInfoServiceImpl"/>

@@ -2,6 +2,7 @@ package com.jkys.consult.logic;
 
 import com.jkys.consult.common.BasePage;
 import com.jkys.consult.model.ConsultInfoModel;
+import com.jkys.consult.statemachine.enums.ConsultStatus;
 
 public interface ConsultLogic {
 
@@ -15,7 +16,7 @@ public interface ConsultLogic {
 
   BasePage<ConsultInfoModel> searchConsultList(Long patientId, String consultType, String consultState);
 
-  String currentConsultState(Long doctorId, Long patientId);
+  ConsultStatus currentConsultState(Long doctorId, Long patientId);
 
 //  Boolean startConsult(String consultId);
 

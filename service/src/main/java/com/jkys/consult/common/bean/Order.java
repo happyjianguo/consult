@@ -50,4 +50,10 @@ public class Order extends BaseEntity<Order> {
    * 充值发起的支付串
    */
   private String payString;
+
+  /**
+   * 本次支付云币结果 1 成功 0 失败 2余额不足
+   */
+  @Default
+  private Integer coinPay = 0;
 }

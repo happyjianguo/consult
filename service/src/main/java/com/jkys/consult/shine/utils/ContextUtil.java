@@ -1,4 +1,4 @@
-package com.jkys.consult.utils;
+package com.jkys.consult.shine.utils;
 
 import com.jkys.phobos.ApiGateway;
 import org.apache.commons.lang3.ArrayUtils;

@@ -14,6 +14,7 @@
   <packaging>jar</packaging>
 
   <dependencies>
+
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>client</artifactId>
@@ -170,6 +171,37 @@
 
     <!-- 测试需要的jar END-->
 
+    <dependency>
+      <groupId>com.darwinsys</groupId>
+      <artifactId>hirondelle-date4j</artifactId>
+      <version>1.5.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jkys.common</groupId>
+      <artifactId>simple-msg-util</artifactId>
+      <version>1.0.6-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>ch.qos.logback</groupId>
+          <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.logging.log4j</groupId>
+          <artifactId>log4j-to-slf4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jkys.pt</groupId>
+      <artifactId>pt.client</artifactId>
+      <version>1.0.1</version>
+    </dependency>
 
   </dependencies>
 </project>

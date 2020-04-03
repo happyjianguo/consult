@@ -35,6 +35,9 @@ public class ConsultStatusMachineConfig extends
   @Resource(name = "consultErrorHandlerAction")
   private Action<ConsultStatus, ConsultEvents> consultErrorHandlerAction;
 
+  @Resource(name = "sendFinishMsgAction")
+  private Action<ConsultStatus, ConsultEvents> sendFinishMsgAction;
+
   @Resource(name = "orderCreateAction")
   private Action<ConsultStatus, ConsultEvents> orderCreateAction;
 
@@ -108,28 +111,35 @@ public class ConsultStatusMachineConfig extends
         .source(ConsultStatus.PROCESSING).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
+        .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
+        .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.STILL_WAIT).target(ConsultStatus.TERMINATED)
         .event(ConsultEvents.TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
+        .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.PROCESSING).target(ConsultStatus.COMPLETED)
         .event(ConsultEvents.COMPLETE)
+        .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.COMPLETED)
         .event(ConsultEvents.COMPLETE)
+        .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.STILL_WAIT).target(ConsultStatus.COMPLETED)
-        .event(ConsultEvents.COMPLETE);
+        .event(ConsultEvents.COMPLETE)
+        .action(sendFinishMsgAction, consultErrorHandlerAction);
+
 //        .and()
 //        .withChoice()
 //        .source(ConsultStatus.CHECK_POSSIBILITY_CHANGE_DOCTOR_CHOICE)

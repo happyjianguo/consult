@@ -1,4 +1,4 @@
-package com.jkys.consult.utils;
+package com.jkys.consult.shine.utils;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;

@@ -21,16 +21,16 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
     //SysUser user = (SysUser)SecurityUtils.getSubject().getPrincipal();
 //		if (null == operator) {
 //    this.setInsertFieldValByName("createUser", "createUser", metaObject);
-    this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+    this.strictInsertFill(metaObject, "gmtCreate", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
-    log.info("LocalDateTime: {}", metaObject.getValue("createTime"));
+    log.info("LocalDateTime: {}", metaObject.getValue("gmtCreate"));
 
 //    this.setInsertFieldValByName("updateUser", "updateUser", metaObject);
 //    this.setInsertFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
 //        metaObject);
-    this.strictInsertFill(metaObject, "modifyTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+    this.strictInsertFill(metaObject, "gmtModify", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
 
-    log.info("LocalDateTime: {}", metaObject.getValue("modifyTime"));
+    log.info("LocalDateTime: {}", metaObject.getValue("gmtModify"));
 
 //    this.setUpdateFieldValByName("version", 1L, metaObject);
 //		}
@@ -44,6 +44,6 @@ public class CustomMetaObjectHandler implements MetaObjectHandler {
 //    this.setUpdateFieldValByName("updateUser", "updateUser", metaObject);
 //    this.setUpdateFieldValByName("modifyTime", LocalDateTime.now(ZoneId.of("Asia/Shanghai")),
 //        metaObject);
-    this.strictInsertFill(metaObject, "modifyTime", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
+    this.strictInsertFill(metaObject, "gmtModify", LocalDateTime.class, LocalDateTime.now(ZoneId.of("Asia/Shanghai")));
   }
 }

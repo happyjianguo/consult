@@ -7,14 +7,26 @@
        http://jkys.com/mars/phobos
        http://jkys.com/mars/phobos.xsd">
 
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.BaseUserInfoReadService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.BaseUserInfoWriteService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.UserExtraReadService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.UserExtraWriteService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.TagInfoReadService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.TagInfoWriteService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.TagUserReadService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.TagUserWriteService"/>-->
+<!--  <phobos:consume interface="com.jkys.usercenter.client.service.BloodSugarService"/>-->
+
+  <phobos:consume interface="com.jkys.coincenter.rpc.CoinCenterPatientService"/>
+
   <phobos:consume interface="com.jkys.usercenter.client.service.BaseUserInfoReadService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.BaseUserInfoWriteService"/>
   <phobos:consume interface="com.jkys.usercenter.client.service.UserExtraReadService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.UserExtraWriteService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.TagInfoReadService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.TagInfoWriteService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.TagUserReadService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.TagUserWriteService"/>
-  <phobos:consume interface="com.jkys.usercenter.client.service.BloodSugarService"/>
+
+  <!--<phobos:consume interface="com.jkys.mall.client.service.MallPayRPCService"/>-->
+  <phobos:consume interface="com.jkys.im.client.api.ChatMessageSendApiService"/>
+  <phobos:consume interface="com.jkys.im.client.api.ChatMessageQueryApiService"/>
+<!--  <phobos:consume interface="com.jkys.drugstore.client.service.PrescriptionDataRpcService"/>-->
+<!--  <phobos:consume interface="com.jkys.drugstore.client.service.DoctorPoolRpcService"/>-->
+  <phobos:consume interface="com.jkys.pt.client.service.member.MemberAdvisoryRpcService"/>
 
 </beans>

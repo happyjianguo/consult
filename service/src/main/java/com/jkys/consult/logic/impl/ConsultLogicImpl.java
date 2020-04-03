@@ -48,6 +48,13 @@ public class ConsultLogicImpl implements ConsultLogic {
   @Autowired
   private CustomSequenceGenerator sequenceGenerator;
 
+  /**
+   * 创建咨询单
+   * @param doctorId
+   * @param patientId
+   * @param consultType
+   * @return
+   */
   @Override
   public String createConsult(Long doctorId, Long patientId, Integer consultType) {
 //    StateMachine<OrderStates, OrderEvents> stateMachine = orderStateMachineBuilder
@@ -81,6 +88,11 @@ public class ConsultLogicImpl implements ConsultLogic {
     return consultId;
   }
 
+  /**
+   * 中止咨询单
+   * @param consultId
+   * @return
+   */
   @Override
   public Boolean terminateConsult(String consultId) {
     try {
@@ -93,6 +105,11 @@ public class ConsultLogicImpl implements ConsultLogic {
     return true;
   }
 
+  /**
+   * 完成咨询单
+   * @param consultId
+   * @return
+   */
   @Override
   public Boolean completeConsult(String consultId) {
     try {
@@ -106,6 +123,8 @@ public class ConsultLogicImpl implements ConsultLogic {
 
   /**
    * 咨询订单详情
+   * @param consultId
+   * @return
    */
   @Override
   public ConsultInfoModel searchConsultDetail(String consultId) {
@@ -125,6 +144,13 @@ public class ConsultLogicImpl implements ConsultLogic {
     return consultInfoModel;
   }
 
+  /**
+   * 咨询单列表 分页
+   * @param patientId
+   * @param consultType
+   * @param consultState
+   * @return
+   */
   @Override
   public BasePage<ConsultInfoModel> searchConsultList(Long patientId, String consultType,
       String consultState) {
@@ -155,13 +181,19 @@ public class ConsultLogicImpl implements ConsultLogic {
     return modelBasePage;
   }
 
+  /**
+   * 当前咨询单状态
+   * @param doctorId
+   * @param patientId
+   * @return
+   */
   @Override
-  public String currentConsultState(Long doctorId, Long patientId) {
+  public ConsultStatus currentConsultState(Long doctorId, Long patientId) {
     Consult consult = consultService.getOne(new QueryWrapper<Consult>()
         .lambda()
         .nested(i -> i.eq(Consult::getDoctorId, doctorId)
                     .eq(Consult::getPatientId, patientId)));
-    return consult.getStatus().getStatus();
+    return consult.getStatus();
   }
 
 //  @Override

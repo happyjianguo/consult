@@ -7,6 +7,8 @@ import static com.jkys.consult.statemachine.enums.OrderEvents.REFUND;
 
 import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.ConsultDomainEvent;
+import com.jkys.consult.common.bean.GeneralEvent;
+import com.jkys.consult.common.bean.GeneralEventType;
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.common.bean.OrderDomainEvent;
 import com.jkys.consult.infrastructure.event.GuavaDomainEventPublisher;
@@ -63,6 +65,40 @@ public class ConsultActionConfig {
   }
 
   /**
+   * 咨询单结束触发 发送IM消息
+   * @return
+   */
+  @Bean(name = "sendFinishMsgAction")
+  public Action<ConsultStatus, ConsultEvents> sendFinishMsgAction(){
+
+    log.info("咨询单结束触发 发送IM消息sendFinishMsgAction");
+
+    return context -> {
+      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+
+      Consult consult = new Consult();
+      consult.setConsultId(bizcode);
+
+      // TODO ---- 根据完结条件不同发送不同的消息 ------> todoByliming
+      // TODO 开启咨询单时发送消息谁来做, 如果问诊，需要添加action
+
+      ConsultStatus source = context.getSource().getId();
+      ConsultStatus target = context.getTarget().getId();
+
+      String FINISH_TEXT = "test...";
+      // Constants.FINISH_TEXT
+
+      GeneralEvent event = GeneralEvent.builder()
+          .object(consult)
+          .message(FINISH_TEXT)
+          .event(GeneralEventType.SEND)
+          .build();
+
+      publisher.publish(event);
+    };
+  }
+
+  /**
    * 订单支付触发咨询单开启
    * @return
    */
@@ -114,6 +150,8 @@ public class ConsultActionConfig {
    */
   @Bean(name = "orderRefundAction")
   public Action<ConsultStatus, ConsultEvents> orderRefundAction(){
+
+    log.info("中止咨询单触发订单退款 orderRefundAction");
 
     return context -> {
       // 订单创建相关请求
