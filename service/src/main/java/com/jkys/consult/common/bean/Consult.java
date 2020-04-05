@@ -51,6 +51,13 @@ public class Consult extends BaseEntity<Consult> {
   @TableField(value = "advisory_type")
   private Integer consultType;
 
+  // TODO ---- 发消息 ------> todoByliming
+  /**
+   * 商城订单ID，咨询单终了时发消息用
+   */
+  private String mallOrderId;
+
+
 //  private LocalDateTime start_time;
 //  private LocalDateTime end_time;
 //  private double waiting;

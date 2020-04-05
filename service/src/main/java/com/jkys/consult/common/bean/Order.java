@@ -56,4 +56,15 @@ public class Order extends BaseEntity<Order> {
    */
   @Default
   private Integer coinPay = 0;
+
+  /**
+   * 医生id
+   */
+  private Long doctorId;
+
+  /**
+   * 病人id
+   */
+  private Long patientId;
+
 }

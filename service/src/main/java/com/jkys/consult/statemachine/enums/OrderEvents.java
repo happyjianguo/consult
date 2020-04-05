@@ -5,8 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 public enum OrderEvents {
   CREATE(0, "创建订单"),
   PAY(1, "支付"),
-  REFUND(2, "退款"),
-  CANCEL(3, "取消订单");
+//  PAY_(2, "支付"),
+  REFUND(3, "退款"),
+  CANCEL(4, "取消订单");
 
   int code;
   String name;

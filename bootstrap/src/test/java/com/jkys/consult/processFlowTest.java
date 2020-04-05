@@ -5,6 +5,7 @@ import com.jkys.consult.base.BaseTest;
 import com.jkys.consult.logic.ConsultLogic;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
+import com.jkys.consult.request.OrderPayRequest;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -45,7 +46,7 @@ public class processFlowTest extends BaseTest {
    * 正常完结
    */
   @Test
-  public void testNomalPAY(){
+  public void testNomalPAY() {
     testCreateConsult();
     testPayOrder();
     testCompleteConsult();
@@ -55,7 +56,7 @@ public class processFlowTest extends BaseTest {
    * 到时中止，退款
    */
   @Test
-  public void testTerminate(){
+  public void testTerminate() {
     testCreateConsult();
     testPayOrder();
     testTerminateConsult();
@@ -65,7 +66,7 @@ public class processFlowTest extends BaseTest {
    * 取消订单
    */
   @Test
-  public void testNoPAY(){
+  public void testNoPAY() {
     testCreateConsult();
     testCancelOrder();
   }
@@ -74,7 +75,7 @@ public class processFlowTest extends BaseTest {
    * 创建咨询单，同时创建订单
    */
   @Test
-  public void testCreateConsult(){
+  public void testCreateConsult() {
     long doctorId = 1L;
     long patientId = 2L;
     int consultType = 1;
@@ -89,7 +90,7 @@ public class processFlowTest extends BaseTest {
    * 完成咨询单
    */
   @Test
-  public void testCompleteConsult(){
+  public void testCompleteConsult() {
     boolean result = consultInfoRpcService.completeConsult(consultId);
     Assert.assertEquals(result, true);
   }
@@ -98,7 +99,7 @@ public class processFlowTest extends BaseTest {
    * 中止咨询单
    */
   @Test
-  public void testTerminateConsult(){
+  public void testTerminateConsult() {
     boolean result = consultLogic.terminateConsult(consultId);
     Assert.assertEquals(result, true);
   }
@@ -107,8 +108,17 @@ public class processFlowTest extends BaseTest {
    * 支付订单，同时启用咨询单
    */
   @Test
-  public void testPayOrder(){
-    boolean result = orderInfoRpcService.payOrder(orderId);
+  public void testPayOrder() {
+    OrderPayRequest request = OrderPayRequest.builder()
+        .mock(true)
+        .orderId(orderId)
+        // TODO ----  ------> todoByliming
+//        .doctorId()
+//        .patientId()
+//        .client()
+//        .reTry()
+        .build();
+    boolean result = orderInfoRpcService.payOrder(request);
     Assert.assertEquals(result, true);
   }
 
@@ -116,7 +126,7 @@ public class processFlowTest extends BaseTest {
    * 取消订单，同时取消咨询单
    */
   @Test
-  public void testCancelOrder(){
+  public void testCancelOrder() {
     boolean result = orderInfoRpcService.cancelOrder(orderId);
     Assert.assertEquals(result, true);
   }

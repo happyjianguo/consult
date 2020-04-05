@@ -74,6 +74,9 @@ public class OrderStatusMachineConfig extends
     transitions
         .withExternal().source(OrderStatus.INIT).target(OrderStatus.WAIT_FOR_PAY)
         .event(OrderEvents.CREATE)
+//        .and()
+//        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.PAYING)
+//        .event(OrderEvents.PAY)
         .and()
         .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.PAYED)
         .event(OrderEvents.PAY)

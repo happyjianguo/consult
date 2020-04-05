@@ -12,10 +12,10 @@ public enum OrderStatus {
 
   PAYING(4,"发起充值"),
   PAYED(5, "已支付"),
-  PAY_FAIL(6,"支付失败"),
+//  PAY_FAIL(6,"支付失败"),
 
-  REFUNDED(7, "已退款"),
-  REFUND_FAIL(8,"退款失败");
+  REFUNDED(7, "已退款");
+//  REFUND_FAIL(8,"退款失败");
 
 
   @Getter

@@ -5,10 +5,11 @@ import static com.jkys.consult.statemachine.enums.OrderEvents.REFUND;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.jkys.consult.common.bean.Order;
+import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.OrderDomainEvent;
 import com.jkys.consult.logic.OrderLogic;
 import com.jkys.consult.logic.OrderStateLogic;
+import com.jkys.consult.service.OrderService;
 import com.jkys.consult.statemachine.enums.OrderEvents;
 import javax.annotation.PostConstruct;
 import lombok.SneakyThrows;
@@ -41,20 +42,25 @@ public class OrderDomainListener {
   @Autowired
   OrderLogic orderLogic;
 
+  @Autowired
+  OrderService orderService;
+
   @SneakyThrows
   @Subscribe
   public void handleEvent(OrderDomainEvent domainEvent) {
     OrderEvents event = domainEvent.getEvent();
-    Order order = domainEvent.getOrder();
+//    Order order = domainEvent.getOrder();
+    Consult consult = domainEvent.getConsult();
 
     // 需要订单持久化操作
     if (event.equals(CREATE)) {
-      orderLogic.createOrder(domainEvent.getOrder());
+      orderLogic.createOrder(consult);
       // 需要订单退款操作
     } else if (event.equals(REFUND)) {
-      orderLogic.refundOrder(domainEvent.getOrder());
+      orderLogic.refundOrder(consult);
     }
-    orderStateLogic.handleAction(event, order);
+
+    orderStateLogic.handleAction(event, consult);
 
 /*
         // invoke application service or domain service

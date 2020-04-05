@@ -18,7 +18,6 @@ import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
 import com.jkys.consult.shine.bean.PatientAdvisoryOrder;
 import com.jkys.consult.shine.mapper.DoctorAdvisoryPriceMapper;
 import com.jkys.consult.shine.mapper.PatientAdvisoryInfoMapper;
-import com.jkys.consult.shine.mapper.PatientAdvisoryOrderMapper;
 import com.jkys.pt.client.service.member.MemberAdvisoryRpcService;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,8 +50,6 @@ public class PatientAdvisoryLogic {
     private ChatMessageService chatMessageService;
     @Resource
     private CoinCenterPatientService coinCenterPatientService;
-    @Resource
-    private PatientAdvisoryOrderMapper patientAdvisoryOrderMapper;
     @Resource
     private DoctorAdvisoryPriceMapper doctorAdvisoryPriceMapper;
     @Resource
@@ -245,7 +242,7 @@ public class PatientAdvisoryLogic {
     }
 
     //云币中心扣云币
-    Boolean isDecreasePatientCoin(PatientAdvisoryOrder order, Integer coin) {
+    public Boolean isDecreasePatientCoin(PatientAdvisoryOrder order, Integer coin) {
         if (coin == 0) {
             return true;
         }
@@ -293,7 +290,7 @@ public class PatientAdvisoryLogic {
      *
      * @param orderNum 跟下单的id保持一致
      */
-    boolean isPaySuccess(String orderNum) {
+    public boolean isPaySuccess(String orderNum) {
         QueryOrderPayResultRequest request = new QueryOrderPayResultRequest();
         request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
         List<String> orderId = new ArrayList<>(1);
@@ -318,7 +315,8 @@ public class PatientAdvisoryLogic {
     }
 
 
-    CoinRechargeResponse coinRecharge(PatientAdvisoryOrder order, Integer coin, Integer payWay) {
+    public CoinRechargeResponse coinRecharge(PatientAdvisoryOrder order, Integer coin,
+        Integer payWay) {
         // 调用支付串rpc
         CoinRechargeRequest request = new CoinRechargeRequest();
         request.setOrderId(order.getOrderNum());
@@ -339,7 +337,7 @@ public class PatientAdvisoryLogic {
     /**
      * 重新获取支付串
      */
-    CoinRechargeResponse reacquirePayString(PatientAdvisoryOrder order, int payWay) {
+    public CoinRechargeResponse reacquirePayString(PatientAdvisoryOrder order, int payWay) {
         CoinRechargeRequest request = new CoinRechargeRequest();
         request.setOrderId(order.getOrderNum());
         request.setPayWay(payWay);

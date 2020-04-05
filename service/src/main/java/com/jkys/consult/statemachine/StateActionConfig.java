@@ -25,7 +25,7 @@ import org.springframework.statemachine.action.Action;
 
 @Configuration
 @Slf4j
-public class ConsultActionConfig {
+public class StateActionConfig {
 
   @Autowired
   GuavaDomainEventPublisher publisher;
@@ -64,6 +64,7 @@ public class ConsultActionConfig {
     };
   }
 
+  // TODO ---- 终了时给商城发消息 ------> todoByliming
   /**
    * 咨询单结束触发 发送IM消息
    * @return
@@ -74,10 +75,11 @@ public class ConsultActionConfig {
     log.info("咨询单结束触发 发送IM消息sendFinishMsgAction");
 
     return context -> {
-      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+//      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+      Consult consult = (Consult) context.getMessageHeader(Constants.CONSULT);
 
-      Consult consult = new Consult();
-      consult.setConsultId(bizcode);
+//      Consult consult = new Consult();
+//      consult.setConsultId(bizcode);
 
       // TODO ---- 根据完结条件不同发送不同的消息 ------> todoByliming
       // TODO 开启咨询单时发送消息谁来做, 如果问诊，需要添加action
@@ -98,6 +100,31 @@ public class ConsultActionConfig {
     };
   }
 
+  // TODO ---- 咨询单开启后发送消息给延迟队列 ------> todoByliming
+  /**
+   * 咨询单结束触发 发送IM消息
+   * @return
+   */
+  @Bean(name = "sendCheckResponseMessageAction")
+  public Action<ConsultStatus, ConsultEvents> sendCheckResponseMessageAction(){
+
+    log.info("咨询单开启后发送消息给延迟队列 sendCheckResponseMessageAction");
+
+    return context -> {
+      Consult consult = (Consult) context.getMessageHeader(Constants.CONSULT);
+
+      // TODO ---- 1. 先更新consult表的startTime字段 ------> todoByliming
+      // TODO ---- 2. 准备消息体，发送给mq ------> todoByliming
+      GeneralEvent event = GeneralEvent.builder()
+//          .object(consult)
+//          .message(FINISH_TEXT)
+//          .event(GeneralEventType.SEND)
+          .build();
+
+      publisher.publish(event);
+    };
+  }
+
   /**
    * 订单支付触发咨询单开启
    * @return
@@ -106,14 +133,15 @@ public class ConsultActionConfig {
   public Action<OrderStatus, OrderEvents> consultRefundAction(){
 
     return context -> {
-      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+//      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+      Order order = (Order) context.getMessageHeader(Constants.ORDER);
 
-      Consult consult = new Consult();
-      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
-      consult.setConsultId(bizcode);
+//      Consult consult = new Consult();
+//      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
+//      consult.setConsultId(order.getConsultId());
 
       ConsultDomainEvent event = ConsultDomainEvent.builder()
-          .consult(consult)
+          .order(order)
           .event(START)
           .build();
 
@@ -129,14 +157,15 @@ public class ConsultActionConfig {
   public Action<OrderStatus, OrderEvents> consultCancelAction(){
 
     return context -> {
-      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+//      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+      Order order = (Order) context.getMessageHeader(Constants.ORDER);
 
-      Consult consult = new Consult();
-      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
-      consult.setConsultId(bizcode);
+//      Consult consult = new Consult();
+//      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setConsultId ------> todoByliming
+//      consult.setConsultId(order.getConsultId());
 
       ConsultDomainEvent event = ConsultDomainEvent.builder()
-          .consult(consult)
+          .order(order)
           .event(CANCEL)
           .build();
 
@@ -155,14 +184,16 @@ public class ConsultActionConfig {
 
     return context -> {
       // 订单创建相关请求
-      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+//      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+      Consult consult = (Consult) context.getMessageHeader(Constants.CONSULT);
 
-      Order order = new Order();
-      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
-      order.setOrderId(bizcode);
+//      Order order = new Order();
+//      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
+//      order.setOrderId(consult.getConsultId());
+//      order.setConsultId(consult.getConsultId());
 
       OrderDomainEvent event = OrderDomainEvent.builder()
-          .order(order)
+          .consult(consult)
           .event(REFUND)
           .build();
 
@@ -179,17 +210,19 @@ public class ConsultActionConfig {
 
     return context -> {
       // 订单创建相关请求
-      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+//      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
+      Consult consult = (Consult) context.getMessageHeader(Constants.CONSULT);
 
       // 从context中获取状态机
 //      StateMachine<ConsultStatus, ConsultEvents> stateMachine = context.getStateMachine();
 
-      Order order = new Order();
-      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
-      order.setOrderId(bizcode);
+//      Order order = new Order();
+//      // TODO ---- 此处由于咨询单和订单ID都用同一个bizCode, 所以直接setOrderId ------> todoByliming
+////      order.setOrderId(consult.getConsultId());
+//      order.setConsultId(consult.getConsultId());
 
       OrderDomainEvent event = OrderDomainEvent.builder()
-          .order(order)
+          .consult(consult)
           .event(CREATE)
           .build();
 

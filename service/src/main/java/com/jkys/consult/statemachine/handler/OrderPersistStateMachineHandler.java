@@ -69,10 +69,11 @@ public class OrderPersistStateMachineHandler extends LifecycleObjectSupport {
 
     // 方式2：
     //恢复
-    String orderId = event.getHeaders().get(Constants.BIZ_CODE).toString();
+//    String orderId = event.getHeaders().get(Constants.BIZ_CODE).toString();
+    Order order = (Order) event.getHeaders().get(Constants.ORDER);
 
     try {
-      orderPersister.restore(stateMachine, new Order().setOrderId(orderId));
+      orderPersister.restore(stateMachine, order);
     } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
@@ -93,12 +94,14 @@ public class OrderPersistStateMachineHandler extends LifecycleObjectSupport {
         Transition<OrderStatus, OrderEvents> transition, StateMachine<OrderStatus,
         OrderEvents> stateMachine) {
 
-      String bizcode = message.getHeaders().get(Constants.BIZ_CODE).toString();
-      log.info("当前订单ID: " + bizcode);
+//      String bizcode = message.getHeaders().get(Constants.BIZ_CODE).toString();
+      Order order = (Order) message.getHeaders().get(Constants.ORDER);
 
-      Order order = Order.builder()
-          .orderId(bizcode)
-          .build();
+      log.info("当前订单ID: " + order.getOrderId());
+
+//      Order order = Order.builder()
+//          .orderId(bizcode)
+//          .build();
 
       orderPersister.persist(stateMachine, order);
 

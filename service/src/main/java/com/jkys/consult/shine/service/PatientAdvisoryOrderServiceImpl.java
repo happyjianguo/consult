@@ -1,4 +1,9 @@
-//package com.jkys.consult.shine;
+package com.jkys.consult.shine.service;
+
+import com.jkys.consult.service.shine.PatientAdvisoryOrderService;
+import com.jkys.consult.shine.bean.PatientAdvisoryOrder;
+import javax.annotation.Resource;
+
 //
 //import com.jkys.consult.common.bean.PatientAdvisoryInfo;
 //import com.jkys.consult.model.OrderInfoModel;
@@ -27,7 +32,7 @@
 // * @author ks
 // * @since 2018/8/31
 // **/
-//public class PatientAdvisoryOrderServiceImpl implements PatientAdvisoryOrderService {
+public class PatientAdvisoryOrderServiceImpl implements PatientAdvisoryOrderService {
 //    private Logger log = LoggerFactory.getLogger(this.getClass());
 //
 //    @Resource
@@ -36,8 +41,8 @@
 //    private UserCenterUserService userCenterUserService;
 //    @Resource
 //    private PatientAdvisoryInfoMapper patientAdvisoryInfoMapper;
-//    @Resource
-//    private PatientAdvisoryLogic patientAdvisoryLogic;
+    @Resource
+    private PatientAdvisoryLogic patientAdvisoryLogic;
 //    private final String[] column = {"hospital"};
 //
 //    public List<OrderInfoModel> queryPatientInfoOrderList(OrderInfoRequest request) {
@@ -140,8 +145,8 @@
 //        return model;
 //    }
 //
-//    @Override
-//    public Boolean backOrder(String orderNum) {
+    @Override
+    public Boolean backOrder(String orderNum) {
 //        PatientAdvisoryOrder order = patientAdvisoryOrderMapper.findLastPayOrder(orderNum, OrderType.PAY.name());
 //        if (order == null) {
 //            return false;
@@ -152,12 +157,13 @@
 //        }
 //        patientAdvisoryInfoMapper.updateStatus(AdvisoryStatus.REFUND.getCode(), info.getId());
 //        PatientAdvisoryOrder backOrder = patientAdvisoryLogic.backOrderCoin(order);
-//        Boolean response = patientAdvisoryLogic.isIncreaseCoin(backOrder);
+      PatientAdvisoryOrder backOrder = null;
+          Boolean response = patientAdvisoryLogic.isIncreaseCoin(backOrder);
 //        if (response) {
 //            patientAdvisoryOrderMapper.updateOrderStatus(OrderStatus.REFUND.getCode(), backOrder.getBizCode());
 //        } else {
 //            patientAdvisoryOrderMapper.updateOrderStatus(OrderStatus.REFUND_FAIL.getCode(), backOrder.getBizCode());
 //        }
-//        return response;
-//    }
-//}
+        return response;
+    }
+}

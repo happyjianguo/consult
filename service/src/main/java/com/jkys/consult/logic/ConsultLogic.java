@@ -8,6 +8,8 @@ public interface ConsultLogic {
 
   String createConsult(Long doctorId, Long patientId, Integer consultType);
 
+  String createConsult(Long doctorId, Long patientId, Integer consultType, String mallOrderId);
+
   Boolean terminateConsult(String consultId);
 
   Boolean completeConsult(String consultId);

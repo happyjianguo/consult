@@ -1,6 +1,7 @@
 package com.jkys.consult.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.infrastructure.db.mapper.OrderMapper;
@@ -31,6 +32,16 @@ public class OrderServiceImpl extends
 
   @Override
   public void updateByOrderId(Order order) {
-    order.insertOrUpdate();
+    this.update(order, new UpdateWrapper<Order>().lambda().eq(Order::getOrderId, order.getOrderId()));
+  }
+
+  @Override
+  public void updateOrderPaying(Integer cost, String bizCode, String payString) {
+    // TODO ---- cost是否保存待定 ------> todoByliming
+    Order order = Order.builder()
+        .orderId(bizCode)
+        .payString(payString)
+        .build();
+    this.update(order, new UpdateWrapper<Order>().lambda().eq(Order::getOrderId, order.getOrderId()));
   }
 }

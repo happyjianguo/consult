@@ -57,6 +57,18 @@ public class ConsultLogicImpl implements ConsultLogic {
    */
   @Override
   public String createConsult(Long doctorId, Long patientId, Integer consultType) {
+    return createConsult(doctorId, patientId, consultType, null);
+  }
+
+  /**
+   * 创建咨询单
+   * @param doctorId
+   * @param patientId
+   * @param consultType
+   * @return
+   */
+  @Override
+  public String createConsult(Long doctorId, Long patientId, Integer consultType, String mallOrderId) {
 //    StateMachine<OrderStates, OrderEvents> stateMachine = orderStateMachineBuilder
 //        .build(beanFactory);
 
@@ -69,6 +81,7 @@ public class ConsultLogicImpl implements ConsultLogic {
           .doctorId(doctorId)
           .patientId(patientId)
           .consultType(consultType)
+          .mallOrderId(mallOrderId)
           .build();
 
       consultService.save(consult);

@@ -3,6 +3,7 @@ package com.jkys.consult.logic;
 import static com.jkys.consult.statemachine.utils.MessageUtil.getMessage;
 
 import com.jkys.consult.common.bean.Consult;
+import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.service.ConsultService;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.consult.statemachine.enums.ConsultStatus;
@@ -23,8 +24,19 @@ public class ConsultStateLogic {
     String consultId = consult.getConsultId();
     Consult result = ConsultService.selectByConsultId(consultId);
 
+    return handleState(event, result);
+  }
+
+  public boolean handleAction(ConsultEvents event, Order order) {
+    String consultId = order.getConsultId();
+    Consult result = ConsultService.selectByConsultId(consultId);
+
+    return handleState(event, result);
+  }
+
+  public boolean handleState(ConsultEvents event, Consult result) {
     //发送事件去触发状态机
-    return handler.handleEventWithState(getMessage(event, consultId),
+    return handler.handleEventWithState(getMessage(event, result),
         ObjectUtils.isEmpty(result) ? ConsultStatus.INIT : result.getStatus());
   }
 }

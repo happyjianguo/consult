@@ -2,7 +2,7 @@ logging:
   level:
     com.jkys.consult.mapper: DEBUG
 
-debug: true
+debug: false
 
 server:
   port: 9241

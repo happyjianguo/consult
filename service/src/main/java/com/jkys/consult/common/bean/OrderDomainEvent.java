@@ -13,6 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class OrderDomainEvent {
+    private Consult consult;
     private Order order;
     private OrderEvents event;
 }

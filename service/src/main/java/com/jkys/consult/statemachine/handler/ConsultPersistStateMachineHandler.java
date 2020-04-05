@@ -69,10 +69,12 @@ public class ConsultPersistStateMachineHandler extends LifecycleObjectSupport {
 
     // 方式2：
     //恢复
-    String consultId = event.getHeaders().get(Constants.BIZ_CODE).toString();
+//    String consultId = event.getHeaders().get(Constants.BIZ_CODE).toString();
+    Consult consult = (Consult) event.getHeaders().get(Constants.CONSULT);
 
     try {
-      consultPersister.restore(stateMachine, new Consult().setConsultId(consultId));
+//      consultPersister.restore(stateMachine, new Consult().setConsultId(consultId));
+      consultPersister.restore(stateMachine, consult);
     } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
@@ -93,12 +95,14 @@ public class ConsultPersistStateMachineHandler extends LifecycleObjectSupport {
         Transition<ConsultStatus, ConsultEvents> transition, StateMachine<ConsultStatus,
         ConsultEvents> stateMachine) {
 
-      String bizcode = message.getHeaders().get(Constants.BIZ_CODE).toString();
-      log.info("当前咨询单ID: " + bizcode);
+//      String bizcode = message.getHeaders().get(Constants.BIZ_CODE).toString();
+      Consult consult = (Consult) message.getHeaders().get(Constants.CONSULT);
 
-      Consult consult = Consult
-          .builder()
-          .consultId(bizcode).build();
+      log.info("当前咨询单ID: " + consult.getConsultId());
+
+//      Consult consult = Consult
+//          .builder()
+//          .consultId(bizcode).build();
 
       consultPersister.persist(stateMachine, consult);
 

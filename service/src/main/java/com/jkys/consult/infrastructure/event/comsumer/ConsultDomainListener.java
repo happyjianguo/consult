@@ -6,6 +6,7 @@ import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.ConsultDomainEvent;
 import com.jkys.consult.common.bean.GeneralEvent;
 import com.jkys.consult.common.bean.GeneralEventType;
+import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
 import com.jkys.consult.logic.ConsultLogic;
 import com.jkys.consult.logic.ConsultStateLogic;
@@ -47,9 +48,10 @@ public class ConsultDomainListener {
     @Subscribe
     public void handleEvent(ConsultDomainEvent domainEvent) {
         ConsultEvents event = domainEvent.getEvent();
-        Consult consult = domainEvent.getConsult();
+//        Consult consult = domainEvent.getConsult();
+        Order order = domainEvent.getOrder();
 
-        consultStateLogic.handleAction(event, consult);
+        consultStateLogic.handleAction(event, order);
     }
 
     @SneakyThrows

@@ -11,8 +11,10 @@ import com.jkys.consult.infrastructure.db.mybatisplus.component.CustomSequenceGe
 import com.jkys.consult.infrastructure.rpc.usercenter.DoctorRemoteRpcService;
 import com.jkys.consult.logic.OrderLogic;
 import com.jkys.consult.logic.OrderStateLogic;
+import com.jkys.consult.logic.PayInfoLogic;
 import com.jkys.consult.service.ConsultService;
 import com.jkys.consult.service.OrderService;
+import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.consult.statemachine.enums.OrderEvents;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import javax.annotation.Resource;
@@ -38,6 +40,9 @@ public class OrderLogicImpl implements OrderLogic {
   ConsultService consultService;
 
   @Autowired
+  PayInfoLogic payInfoLogic;
+
+  @Autowired
   private CustomSequenceGenerator sequenceGenerator;
 
   // TODO ---- FAKE ------> todoByliming
@@ -46,7 +51,12 @@ public class OrderLogicImpl implements OrderLogic {
 
   @Override
   public Boolean createOrder(Order order) {
-    return createOrder(order.getOrderId());
+    return createOrder(order.getConsultId());
+  }
+
+  @Override
+  public Boolean createOrder(Consult consult) {
+    return createOrder(consult.getConsultId());
   }
 
   @Override
@@ -62,8 +72,20 @@ public class OrderLogicImpl implements OrderLogic {
 
   @Override
   public Boolean refundOrder(Order order) {
+    return refundOrder(order.getConsultId());
+  }
+
+  @Override
+  public Boolean refundOrder(Consult consult) {
+    return refundOrder(consult.getConsultId());
+  }
+
+  @Override
+  public Boolean refundOrder(String consultId) {
     try {
       // TODO ---- 调用云币中心退款 ------> todoByliming
+
+
     }catch (Exception e){
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
@@ -72,9 +94,12 @@ public class OrderLogicImpl implements OrderLogic {
   }
 
   @Override
-  public Boolean payOrder(Order order) {
+  public Boolean payOrder(OrderPayRequest request) {
+    Order order = orderService.selectByOrderId(request.getOrderId());
     try {
       // TODO ---- 调用云币中心付款 ------> todoByliming
+      //  下面操作需要同步，并且捕捉异常
+      payInfoLogic.payGo(request);
       orderStateLogic.handleAction(PAY, order);
     }catch (Exception e){
       e.printStackTrace();
@@ -84,24 +109,26 @@ public class OrderLogicImpl implements OrderLogic {
   }
 
   @Override
-  public Boolean createOrder(String orderId) {
+  public Boolean createOrder(String consultId) {
 //    StateMachine<OrderStates, OrderEvents> stateMachine = orderStateMachineBuilder
 //        .build(beanFactory);
 
     try {
       // TODO ---- 获取医生价格 ------> todoByliming
-      // TODO ---- 默认相同 ------> todoByliming
-      String consultId = orderId;
       Consult consult = consultService.selectByConsultId(consultId);
       Long doctorId = consult.getDoctorId();
       int price = doctorRemoteRpcService.getDoctorPrice(doctorId);
 
       // TODO ---- 是否要生成orderID ------> todoByliming
 //      final String orderId = sequenceGenerator.genBizCode();
+      String orderId = consultId;
 
       Order order = Order.builder()
           .consultId(consultId)
           .orderId(orderId)
+          // TODO ---- order是否包含医生和患者，待定 ------> todoByliming
+          .doctorId(consult.getDoctorId())
+          .patientId(consult.getPatientId())
           .price(price)
           .build();
 

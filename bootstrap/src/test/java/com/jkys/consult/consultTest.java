@@ -9,7 +9,6 @@ import com.jkys.consult.model.ConsultInfoModel;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,10 +43,10 @@ public class consultTest extends BaseTest {
   }
 
   /**
-   * 创建咨询单，同时创建订单
+   * 当前患者，指定咨询类型和咨询单状态下，咨询单列表
    */
   @Test
-  public void testCreateConsult(){
+  public void testSearchConsultList(){
     long patientId = 2L;
     String consultType = "1";
     String consultState = "待支付";
@@ -57,12 +56,13 @@ public class consultTest extends BaseTest {
   }
 
   /**
-   * 完成咨询单
+   * 咨询单详情
    */
   @Test
-  public void testCompleteConsult(){
-    boolean result = consultInfoRpcService.completeConsult(consultId);
-    Assert.assertEquals(result, true);
+  public void testSearchConsultDetail(){
+    ConsultInfoModel result = consultInfoRpcService.searchConsultDetail("WZ202004020000055");
+    Gson gson = new Gson();
+    log.info(gson.toJson(result));
   }
 
 }

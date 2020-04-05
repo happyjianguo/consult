@@ -14,5 +14,6 @@ import lombok.Setter;
 @Builder
 public class ConsultDomainEvent {
     private Consult consult;
+    private Order order;
     private ConsultEvents event;
 }

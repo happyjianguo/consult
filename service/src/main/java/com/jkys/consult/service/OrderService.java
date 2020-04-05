@@ -13,6 +13,8 @@ public interface OrderService extends IService<Order> {
 
   void updateByOrderId(Order order);
 
+  void updateOrderPaying(Integer cost, String bizCode, String payString);
+
 //  BasePage<User> mySelectPage(@Param("pg") BasePage<User> myPage);
 //
 //  User queryUserName(String s);

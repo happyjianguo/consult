@@ -10,6 +10,9 @@
 
 需要增加接口：
 
+1. 患者ID尽量用Long userId = ApiGateway.getUserId();
+自测时可以mock
+
 1. 当前是否存在开药问诊
 
 2. 消费ih处方审核结果消息
@@ -17,6 +20,8 @@
 4. 修改rpc*.xml 注册bean 如kafkasender
 
 5. 支付payGo时需判断当前咨询单状态
+
+支付和退款动作
 
 PatientAdvisoryServiceImpl
 
@@ -44,6 +49,7 @@ PatientAdvisoryLogic
 
 5. 发送IM消息
 
+TODO 提示消息不同
     chatMessageService.sendOrderMessage(info.getPatientId(), info.getDoctorId(), info.getId());
 
 6. 计时从支付时开始
@@ -59,6 +65,8 @@ PatientAdvisoryLogic
 只是在查询涉及医生咨询单状态时，同组医生一同作为条件的逻辑
 
 ## 问题：
+
+1. **状态机和eventBus会把异常吞掉**
 
 1. 病人和医生信息从哪取的？
 

@@ -1,6 +1,6 @@
 package com.jkys.consult.shine.mapper;
 
-import com.jkys.consult.shine.bean.CoinOrderModel;
+import com.jkys.consult.model.CoinOrderModel;
 import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;

@@ -37,7 +37,9 @@ public class ChatMessageService {
 
     private final ExecutorService service = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(100), r -> new Thread(r, "chatMessage-"));
+    // TODO ---- url待定 ------> todoByliming
     private static final String RICH_ADDRESS = "/wechat-official-account/build/IMDetail/index.html?orderId=";
+    // TODO ---- 图片url待定 ------> todoByliming
     private static final String RICH_IMG =
             "https://static.91jkys" + "" + ".com/uploadfile/45622229_1537496347492_fileUploads_1537496347343.jpg";
 

@@ -5,6 +5,7 @@ import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.logic.OrderLogic;
 import com.jkys.consult.logic.OrderStateLogic;
 import com.jkys.consult.service.order.OrderInfoRpcService;
+import com.jkys.consult.request.OrderPayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,8 @@ public class OrderInfoRpcServiceImpl implements OrderInfoRpcService {
   }
 
   @Override
-  public Boolean payOrder(String orderId) {
-    boolean result = orderLogic.payOrder(new Order().setOrderId(orderId));
+  public Boolean payOrder(OrderPayRequest request) {
+    boolean result = orderLogic.payOrder(request);
     return result;
   }
 

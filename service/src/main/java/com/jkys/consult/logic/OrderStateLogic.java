@@ -2,6 +2,7 @@ package com.jkys.consult.logic;
 
 import static com.jkys.consult.statemachine.utils.MessageUtil.getMessage;
 
+import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.service.OrderService;
 import com.jkys.consult.statemachine.enums.OrderEvents;
@@ -20,12 +21,21 @@ public class OrderStateLogic {
   @Autowired
   OrderService OrderService;
 
-  public boolean handleAction(OrderEvents event, Order order) {
-    String orderId = order.getOrderId();
-    Order result = OrderService.selectByOrderId(orderId);
+  public boolean handleAction(OrderEvents event, Consult consult) {
+    Order result = OrderService.selectByConsultId(consult.getConsultId());
 
+    return handleState(event, result);
+  }
+
+  public boolean handleAction(OrderEvents event, Order order) {
+    Order result = OrderService.selectByOrderId(order.getOrderId());
+
+    return handleState(event, result);
+  }
+
+  public boolean handleState(OrderEvents event, Order result) {
     //发送事件去触发状态机
-    return handler.handleEventWithState(getMessage(event, orderId),
+    return handler.handleEventWithState(getMessage(event, result),
         ObjectUtils.isEmpty(result) ? OrderStatus.INIT : result.getStatus());
   }
 }

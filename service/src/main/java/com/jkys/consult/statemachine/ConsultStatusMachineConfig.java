@@ -38,6 +38,9 @@ public class ConsultStatusMachineConfig extends
   @Resource(name = "sendFinishMsgAction")
   private Action<ConsultStatus, ConsultEvents> sendFinishMsgAction;
 
+  @Resource(name = "sendCheckResponseMessageAction")
+  private Action<ConsultStatus, ConsultEvents> sendCheckResponseMessageAction;
+
   @Resource(name = "orderCreateAction")
   private Action<ConsultStatus, ConsultEvents> orderCreateAction;
 
@@ -88,6 +91,8 @@ public class ConsultStatusMachineConfig extends
         .withExternal()
         .source(ConsultStatus.WAIT_FOR_PROCESS).target(ConsultStatus.PROCESSING)
         .event(ConsultEvents.START)
+        // TODO ---- 咨询单开启后发送消息给延迟队列， ------> todoByliming
+        .action(sendCheckResponseMessageAction, consultErrorHandlerAction)
         .and()
         .withExternal()
         .source(ConsultStatus.WAIT_FOR_PROCESS).target(ConsultStatus.CANCELED).event(
