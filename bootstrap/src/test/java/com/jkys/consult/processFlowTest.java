@@ -92,7 +92,7 @@ public class processFlowTest extends BaseTest {
     ConsultInfoRequest request = ConsultInfoRequest.builder()
         .doctorId(doctorId)
         .patientId(patientId)
-        .consultType(consultType)
+        .consultType(2)
         .mallOrderId(mallOrderId)
         .build();
     ConsultInfoResponse response = consultInfoRpcService.createConsult(request);
