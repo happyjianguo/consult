@@ -1,5 +1,6 @@
 package com.jkys.consult.infrastructure.rpc.usercenter.dataobject;
 
+@Deprecated
 public class UserDO {
     private String id;
     private String phone;

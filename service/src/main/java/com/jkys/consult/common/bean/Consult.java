@@ -4,8 +4,9 @@ import static com.jkys.consult.statemachine.enums.ConsultStatus.INIT;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.common.BaseEntity;
+import com.jkys.consult.common.component.BaseEntity;
 import com.jkys.consult.statemachine.enums.ConsultStatus;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -46,19 +47,20 @@ public class Consult extends BaseEntity<Consult> {
   private Long patientId;
 
   /**
-   * 咨询类型 2 专家门诊 3 开药门诊
+   * 咨询类型 1 专家门诊 2 开药门诊
    */
   @TableField(value = "advisory_type")
   private Integer consultType;
 
-  // TODO ---- 发消息 ------> todoByliming
   /**
    * 商城订单ID，咨询单终了时发消息用
    */
   private String mallOrderId;
 
+  private LocalDateTime startTime;
 
-//  private LocalDateTime start_time;
+  private String client;
+
 //  private LocalDateTime end_time;
 //  private double waiting;
 

@@ -1,14 +1,35 @@
 package com.jkys.consult.statemachine;
 
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.CANCEL;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.CHANGE_DOCTOR;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.CHANGE_POSSIBILITY;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.COMPLETE;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.CREATE;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.START;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.TERMINATE;
+import static com.jkys.consult.statemachine.enums.ConsultEvents.WAIT;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.CANCELED;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.COMPLETED;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.INIT;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.MAY_CHANGE_DOCTOR;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.PROCESSING;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.STILL_WAIT;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.TERMINATED;
+import static com.jkys.consult.statemachine.enums.ConsultStatus.WAIT_FOR_PROCESS;
+
+import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.statemachine.constant.Constants;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.consult.statemachine.enums.ConsultStatus;
 import java.util.EnumSet;
 import java.util.Optional;
 import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
@@ -26,6 +47,7 @@ import org.springframework.statemachine.transition.Transition;
 @Configuration
 //@EnableStateMachine(name = "ConsultStatusMachine")
 @EnableStateMachineFactory(name = "ConsultStatusMachineFactory")
+@Slf4j
 public class ConsultStatusMachineConfig extends
     EnumStateMachineConfigurerAdapter<ConsultStatus, ConsultEvents> {
 
@@ -37,6 +59,9 @@ public class ConsultStatusMachineConfig extends
 
   @Resource(name = "sendFinishMsgAction")
   private Action<ConsultStatus, ConsultEvents> sendFinishMsgAction;
+
+  @Resource(name = "sendStartMsgAction")
+  private Action<ConsultStatus, ConsultEvents> sendStartMsgAction;
 
   @Resource(name = "sendCheckResponseMessageAction")
   private Action<ConsultStatus, ConsultEvents> sendCheckResponseMessageAction;
@@ -71,7 +96,7 @@ public class ConsultStatusMachineConfig extends
       throws Exception {
     states
         .withStates()
-        .initial(ConsultStatus.INIT)
+        .initial(INIT)
         .states(EnumSet.allOf(ConsultStatus.class));
   }
 
@@ -84,84 +109,85 @@ public class ConsultStatusMachineConfig extends
       throws Exception {
     transitions
         .withExternal()
-        .source(ConsultStatus.INIT).target(ConsultStatus.WAIT_FOR_PROCESS)
-        .event(ConsultEvents.CREATE)
+        .source(INIT).target(WAIT_FOR_PROCESS)
+        .event(CREATE)
         .action(orderCreateAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.WAIT_FOR_PROCESS).target(ConsultStatus.PROCESSING)
-        .event(ConsultEvents.START)
+        .source(WAIT_FOR_PROCESS).target(PROCESSING)
+        .event(START)
+        .action(sendStartMsgAction, consultErrorHandlerAction)
         // TODO ---- 咨询单开启后发送消息给延迟队列， ------> todoByliming
-        .action(sendCheckResponseMessageAction, consultErrorHandlerAction)
+//        .action(sendCheckResponseMessageAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.WAIT_FOR_PROCESS).target(ConsultStatus.CANCELED).event(
-        ConsultEvents.CANCEL)
+        .source(WAIT_FOR_PROCESS).target(CANCELED).event(
+        CANCEL)
         // 前端调用是否超时12小时接口
         // 如果超时，调用推荐列表接口
         .and()
         .withExternal()
-        .source(ConsultStatus.PROCESSING).target(ConsultStatus.MAY_CHANGE_DOCTOR)
-        .event(ConsultEvents.CHANGE_POSSIBILITY)
+        .source(PROCESSING).target(MAY_CHANGE_DOCTOR)
+        .event(CHANGE_POSSIBILITY)
         .and()
         .withExternal()
-        .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.STILL_WAIT)
-        .event(ConsultEvents.WAIT)
+        .source(MAY_CHANGE_DOCTOR).target(STILL_WAIT)
+        .event(WAIT)
         .and()
         .withExternal()
-        .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.TERMINATED)
-        .event(ConsultEvents.CHANGE_DOCTOR)
+        .source(MAY_CHANGE_DOCTOR).target(TERMINATED)
+        .event(CHANGE_DOCTOR)
         .and()
         .withExternal()
-        .source(ConsultStatus.PROCESSING).target(ConsultStatus.TERMINATED)
-        .event(ConsultEvents.TERMINATE)
+        .source(PROCESSING).target(TERMINATED)
+        .event(TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
         .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.TERMINATED)
-        .event(ConsultEvents.TERMINATE)
+        .source(MAY_CHANGE_DOCTOR).target(TERMINATED)
+        .event(TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
         .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.STILL_WAIT).target(ConsultStatus.TERMINATED)
-        .event(ConsultEvents.TERMINATE)
+        .source(STILL_WAIT).target(TERMINATED)
+        .event(TERMINATE)
         .action(orderRefundAction, consultErrorHandlerAction)
         .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.PROCESSING).target(ConsultStatus.COMPLETED)
-        .event(ConsultEvents.COMPLETE)
+        .source(PROCESSING).target(COMPLETED)
+        .event(COMPLETE)
         .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.COMPLETED)
-        .event(ConsultEvents.COMPLETE)
+        .source(MAY_CHANGE_DOCTOR).target(COMPLETED)
+        .event(COMPLETE)
         .action(sendFinishMsgAction, consultErrorHandlerAction)
         .and()
         .withExternal()
-        .source(ConsultStatus.STILL_WAIT).target(ConsultStatus.COMPLETED)
-        .event(ConsultEvents.COMPLETE)
+        .source(STILL_WAIT).target(COMPLETED)
+        .event(COMPLETE)
         .action(sendFinishMsgAction, consultErrorHandlerAction);
 
 //        .and()
 //        .withChoice()
-//        .source(ConsultStatus.CHECK_POSSIBILITY_CHANGE_DOCTOR_CHOICE)
-//        .first(ConsultStatus.MAY_CHANGE_DOCTOR, new ConsultCheckPossibilityChoiceGuard(),
+//        .source(CHECK_POSSIBILITY_CHANGE_DOCTOR_CHOICE)
+//        .first(MAY_CHANGE_DOCTOR, new ConsultCheckPossibilityChoiceGuard(),
 //            new ConsultCheckPossibilityChoiceAction())
-//        .last(ConsultStatus.CONSULTING)
+//        .last(CONSULTING)
 //        .and()
-//        .withExternal().source(ConsultStatus.MAY_CHANGE_DOCTOR).target(ConsultStatus.CHECK_WHETHER_CHANGE_DOCTOR_CHOICE)
-//        .event(ConsultEvents.CHANGE_DOCTOR)
+//        .withExternal().source(MAY_CHANGE_DOCTOR).target(CHECK_WHETHER_CHANGE_DOCTOR_CHOICE)
+//        .event(CHANGE_DOCTOR)
 //        .and()
 //        .withChoice()
-//        .source(ConsultStatus.CHECK_WHETHER_CHANGE_DOCTOR_CHOICE)
-//        .first(ConsultStatus.TERMINATED, new ConsultCheckWhetherChoiceGuard())
-//        .last(ConsultStatus.CONSULTING)
+//        .source(CHECK_WHETHER_CHANGE_DOCTOR_CHOICE)
+//        .first(TERMINATED, new ConsultCheckWhetherChoiceGuard())
+//        .last(CONSULTING)
 //        .and()
-//        .withExternal().source(ConsultStatus.CONSULTING).target(ConsultStatus.TERMINATED).event(
-//        ConsultEvents.TERMINATE);
+//        .withExternal().source(CONSULTING).target(TERMINATED).event(
+//        TERMINATE);
   }
 
 //  @Bean
@@ -176,10 +202,15 @@ public class ConsultStatusMachineConfig extends
 //    };
 //  }
 
-
   @Bean(name = "consultListener")
   public StateMachineListener<ConsultStatus, ConsultEvents> listener() {
     return new StateMachineListenerAdapter<ConsultStatus, ConsultEvents>() {
+
+      @Override
+      public void stateMachineError(StateMachine<ConsultStatus, ConsultEvents> stateMachine, Exception exception) {
+        log.error("consultListener stateMachine execute error = ", exception);
+        throw new ServerException(SERVER_ERROR, "状态机异常");
+      }
 
       @Override
       public void stateEntered(State<ConsultStatus, ConsultEvents> state) {

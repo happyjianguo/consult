@@ -1,6 +1,6 @@
 package com.jkys.consult.exception;
 
-import com.jkys.consult.common.CodeMsg;
+import com.jkys.consult.common.component.CodeMsg;
 import com.jkys.phobos.exception.ServiceError;
 import lombok.Getter;
 import lombok.Setter;

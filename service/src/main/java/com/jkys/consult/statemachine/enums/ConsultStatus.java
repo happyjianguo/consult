@@ -1,13 +1,13 @@
 package com.jkys.consult.statemachine.enums;
 
-import static com.jkys.consult.enums.ConsultModelStatus.CANCEL;
-import static com.jkys.consult.enums.ConsultModelStatus.COMPLETE;
-import static com.jkys.consult.enums.ConsultModelStatus.INPROCESS;
-import static com.jkys.consult.enums.ConsultModelStatus.REFUND;
-import static com.jkys.consult.enums.ConsultModelStatus.UNPAY;
+import static com.jkys.consult.common.enums.ConsultModelStatus.CANCEL;
+import static com.jkys.consult.common.enums.ConsultModelStatus.COMPLETE;
+import static com.jkys.consult.common.enums.ConsultModelStatus.INPROCESS;
+import static com.jkys.consult.common.enums.ConsultModelStatus.REFUND;
+import static com.jkys.consult.common.enums.ConsultModelStatus.UNPAY;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.jkys.consult.enums.ConsultModelStatus;
+import com.jkys.consult.common.enums.ConsultModelStatus;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,6 @@ public enum ConsultStatus {
   CANCELED(CANCEL, 4, "已取消"),
   COMPLETED(COMPLETE, 5, "已完成"),
   TERMINATED(REFUND, 6, "已终止");
-
 
   @Getter
   private ConsultModelStatus type;
@@ -89,6 +88,20 @@ public enum ConsultStatus {
     Optional<ConsultStatus> statusEnumOptional = Arrays.asList(ConsultStatus.values())
         .parallelStream()
         .filter(statusEnum -> StringUtils.equalsIgnoreCase(status, statusEnum.getStatus()))
+        .findAny();
+    if (statusEnumOptional.isPresent()) {
+      return statusEnumOptional.get();
+    }
+    return null;
+  }
+
+  /**
+   * code-->statusEnum
+   */
+  public static ConsultStatus getByCode(int code) {
+    Optional<ConsultStatus> statusEnumOptional = Arrays.asList(ConsultStatus.values())
+        .parallelStream()
+        .filter(statusEnum -> code == statusEnum.getCode())
         .findAny();
     if (statusEnumOptional.isPresent()) {
       return statusEnumOptional.get();

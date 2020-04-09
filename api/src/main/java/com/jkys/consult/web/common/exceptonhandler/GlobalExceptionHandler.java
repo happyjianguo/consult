@@ -1,10 +1,10 @@
 package com.jkys.consult.web.common.exceptonhandler;
 
-import static com.jkys.consult.common.CodeMsg.PARAMS_ERROR;
-import static com.jkys.consult.common.CodeMsg.PARAMS_ERROR_4_RPC;
-import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.PARAMS_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.PARAMS_ERROR_4_RPC;
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
 
-import com.jkys.consult.common.Result;
+import com.jkys.consult.common.component.Result;
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.exception.ValidationException;
 import com.jkys.phobos.exception.ServiceError;

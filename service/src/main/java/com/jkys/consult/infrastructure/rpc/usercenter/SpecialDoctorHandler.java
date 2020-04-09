@@ -1,4 +1,4 @@
-package com.jkys.consult.shine.service;
+package com.jkys.consult.infrastructure.rpc.usercenter;
 
 import java.util.ArrayList;
 import java.util.List;

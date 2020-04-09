@@ -1,4 +1,4 @@
-package com.jkys.consult.common;
+package com.jkys.consult.common.component;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

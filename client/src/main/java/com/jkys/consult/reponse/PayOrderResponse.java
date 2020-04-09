@@ -1,4 +1,4 @@
-package com.jkys.consult.model;
+package com.jkys.consult.reponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CoinOrderModel/* extends BaseResponse */{
+public class PayOrderResponse/* extends BaseResponse */{
 
   /**
    * 云币余额
@@ -48,7 +48,7 @@ public class CoinOrderModel/* extends BaseResponse */{
   /**
    * 当前咨询单id
    */
-  private Long consultId;
+  private String consultId;
 
   /**
    * 当前支付单id

@@ -1,8 +1,11 @@
 package com.jkys.consult.statemachine;
 
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.constants.Constants.PRESCRIBE_CONSULT_TYPE;
 import static com.jkys.consult.statemachine.enums.ConsultEvents.CANCEL;
 import static com.jkys.consult.statemachine.enums.ConsultEvents.START;
 import static com.jkys.consult.statemachine.enums.OrderEvents.CREATE;
+import static com.jkys.consult.statemachine.enums.OrderEvents.PAY;
 import static com.jkys.consult.statemachine.enums.OrderEvents.REFUND;
 
 import com.jkys.consult.common.bean.Consult;
@@ -11,7 +14,9 @@ import com.jkys.consult.common.bean.GeneralEvent;
 import com.jkys.consult.common.bean.GeneralEventType;
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.common.bean.OrderDomainEvent;
+import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.infrastructure.event.GuavaDomainEventPublisher;
+import com.jkys.consult.logic.OrderLogic;
 import com.jkys.consult.statemachine.constant.Constants;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.consult.statemachine.enums.ConsultStatus;
@@ -30,6 +35,9 @@ public class StateActionConfig {
   @Autowired
   GuavaDomainEventPublisher publisher;
 
+  @Autowired
+  OrderLogic orderLogic;
+
   /**
    * 异常处理Action
    *
@@ -44,6 +52,8 @@ public class StateActionConfig {
       context.getStateMachine()
           .getExtendedState().getVariables()
           .put(RuntimeException.class, exception);
+      // TODO ---- 如何捕获状态机异常 ------> todoByliming
+      throw new ServerException(SERVER_ERROR, "状态机异常");
     };
   }
 
@@ -61,16 +71,18 @@ public class StateActionConfig {
       context.getStateMachine()
           .getExtendedState().getVariables()
           .put(RuntimeException.class, exception);
+      // TODO ---- 如何捕获状态机异常 ------> todoByliming
+      throw new ServerException(SERVER_ERROR, "状态机异常");
     };
   }
 
   // TODO ---- 终了时给商城发消息 ------> todoByliming
+
   /**
    * 咨询单结束触发 发送IM消息
-   * @return
    */
   @Bean(name = "sendFinishMsgAction")
-  public Action<ConsultStatus, ConsultEvents> sendFinishMsgAction(){
+  public Action<ConsultStatus, ConsultEvents> sendFinishMsgAction() {
 
     log.info("咨询单结束触发 发送IM消息sendFinishMsgAction");
 
@@ -93,7 +105,29 @@ public class StateActionConfig {
       GeneralEvent event = GeneralEvent.builder()
           .object(consult)
           .message(FINISH_TEXT)
-          .event(GeneralEventType.SEND)
+          .event(GeneralEventType.SEND_FINISH)
+          .build();
+
+      publisher.publish(event);
+    };
+  }
+
+  // TODO ---- 支付成功时给IM发消息 ------> todoByliming
+
+  /**
+   * 咨询单开启触发 发送IM消息
+   */
+  @Bean(name = "sendStartMsgAction")
+  public Action<ConsultStatus, ConsultEvents> sendStartMsgAction() {
+
+    log.info("咨询单开启触发 发送IM消息 sendStartMsgAction");
+
+    return context -> {
+      Consult consult = context.getMessage().getHeaders().get(Constants.CONSULT, Consult.class);
+
+      GeneralEvent event = GeneralEvent.builder()
+          .object(consult)
+          .event(GeneralEventType.SEND_START)
           .build();
 
       publisher.publish(event);
@@ -101,12 +135,12 @@ public class StateActionConfig {
   }
 
   // TODO ---- 咨询单开启后发送消息给延迟队列 ------> todoByliming
+
   /**
    * 咨询单结束触发 发送IM消息
-   * @return
    */
   @Bean(name = "sendCheckResponseMessageAction")
-  public Action<ConsultStatus, ConsultEvents> sendCheckResponseMessageAction(){
+  public Action<ConsultStatus, ConsultEvents> sendCheckResponseMessageAction() {
 
     log.info("咨询单开启后发送消息给延迟队列 sendCheckResponseMessageAction");
 
@@ -127,10 +161,9 @@ public class StateActionConfig {
 
   /**
    * 订单支付触发咨询单开启
-   * @return
    */
   @Bean(name = "consultStartAction")
-  public Action<OrderStatus, OrderEvents> consultRefundAction(){
+  public Action<OrderStatus, OrderEvents> consultRefundAction() {
 
     return context -> {
 //      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
@@ -151,10 +184,9 @@ public class StateActionConfig {
 
   /**
    * 订单取消触发咨询单取消
-   * @return
    */
   @Bean(name = "consultCancelAction")
-  public Action<OrderStatus, OrderEvents> consultCancelAction(){
+  public Action<OrderStatus, OrderEvents> consultCancelAction() {
 
     return context -> {
 //      String bizcode = (String) context.getMessageHeader(Constants.BIZ_CODE);
@@ -175,10 +207,9 @@ public class StateActionConfig {
 
   /**
    * 中止咨询单触发订单退款
-   * @return
    */
   @Bean(name = "orderRefundAction")
-  public Action<ConsultStatus, ConsultEvents> orderRefundAction(){
+  public Action<ConsultStatus, ConsultEvents> orderRefundAction() {
 
     log.info("中止咨询单触发订单退款 orderRefundAction");
 
@@ -203,10 +234,9 @@ public class StateActionConfig {
 
   /**
    * 创建咨询单触发创建订单
-   * @return
    */
   @Bean(name = "orderCreateAction"/*, autowire = Autowire.BY_TYPE*/)
-  public Action<ConsultStatus, ConsultEvents> orderCreateAction(){
+  public Action<ConsultStatus, ConsultEvents> orderCreateAction() {
 
     return context -> {
       // 订单创建相关请求
@@ -227,9 +257,30 @@ public class StateActionConfig {
           .build();
 
       publisher.publish(event);
+
 //    MyStateMachineUtils.setCurrentState(stateMachine, ConsultStatus.PROCESSING);
 
 //      bizOrderCreateBizManager.process(createRequest);
+    };
+  }
+
+  /**
+   * 创建咨询单触发创建订单
+   */
+  @Bean(name = "orderAutoPayAction"/*, autowire = Autowire.BY_TYPE*/)
+  public Action<OrderStatus, OrderEvents> orderAutoPayAction() {
+
+    return context -> {
+      Consult consult = (Consult) context.getMessageHeader(Constants.CONSULT);
+      // 开药门诊, 自动支付订单
+      if (PRESCRIBE_CONSULT_TYPE.equals(consult.getConsultType())) {
+        OrderDomainEvent event = OrderDomainEvent.builder()
+            .consult(consult)
+            .event(PAY)
+            .build();
+
+        publisher.publish(event);
+      }
     };
   }
 

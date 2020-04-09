@@ -1,6 +1,6 @@
-package com.jkys.consult.common;
+package com.jkys.consult.common.component;
 
-import static com.jkys.consult.common.CodeMsg.SUCCESS;
+import static com.jkys.consult.common.component.CodeMsg.SUCCESS;
 
 import lombok.Getter;
 import lombok.Setter;

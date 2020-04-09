@@ -1,6 +1,6 @@
 package com.jkys.consult.infrastructure.rpc.chat;
 
-import com.jkys.consult.shine.constants.Constants;
+import com.jkys.consult.common.constants.Constants;
 import com.jkys.consult.shine.service.AppConfig;
 import com.jkys.consult.shine.utils.DateUtil1;
 import com.jkys.im.client.api.ChatMessageQueryApiService;
@@ -15,9 +15,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -25,8 +24,9 @@ import org.springframework.stereotype.Service;
  * @since 2018/7/17
  **/
 @Service
+@Slf4j
 public class ChatMessageService {
-    private Logger log = LoggerFactory.getLogger(this.getClass());
+
     // TODO ---- 干掉 ------> todoByliming
     @Resource
     private AppConfig appConfig;
@@ -38,7 +38,8 @@ public class ChatMessageService {
     private final ExecutorService service = new ThreadPoolExecutor(10, 20, 10, TimeUnit.SECONDS,
             new LinkedBlockingQueue<>(100), r -> new Thread(r, "chatMessage-"));
     // TODO ---- url待定 ------> todoByliming
-    private static final String RICH_ADDRESS = "/wechat-official-account/build/IMDetail/index.html?orderId=";
+    //  用订单表物理id
+    private static final String RICH_ADDRESS = "/wechat-official-account/build/IMDetail/index.html?id=";
     // TODO ---- 图片url待定 ------> todoByliming
     private static final String RICH_IMG =
             "https://static.91jkys" + "" + ".com/uploadfile/45622229_1537496347492_fileUploads_1537496347343.jpg";

@@ -1,7 +1,7 @@
 package com.jkys.consult.common.bean;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.common.BaseEntity;
+import com.jkys.consult.common.component.BaseEntity;
 import com.jkys.consult.infrastructure.db.mybatisplus.validate.MyLength;
 import com.jkys.consult.infrastructure.db.mybatisplus.validate.groups.Create;
 import com.jkys.consult.infrastructure.db.mybatisplus.validate.groups.Update;

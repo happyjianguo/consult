@@ -1,5 +1,6 @@
 package com.jkys.consult.infrastructure.event.comsumer;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.jkys.consult.common.bean.Consult;
@@ -11,8 +12,10 @@ import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
 import com.jkys.consult.logic.ConsultLogic;
 import com.jkys.consult.logic.ConsultStateLogic;
 import com.jkys.consult.service.ConsultService;
+import com.jkys.consult.service.OrderService;
 import com.jkys.consult.statemachine.enums.ConsultEvents;
 import com.jkys.im.client.enumeration.MessageType;
+import java.time.LocalDateTime;
 import javax.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,9 @@ public class ConsultDomainListener {
     ConsultService consultService;
 
     @Autowired
+    OrderService orderService;
+
+    @Autowired
     private ChatMessageService chatMessageService;
 
     @SneakyThrows
@@ -50,15 +56,23 @@ public class ConsultDomainListener {
         ConsultEvents event = domainEvent.getEvent();
 //        Consult consult = domainEvent.getConsult();
         Order order = domainEvent.getOrder();
-
+        if (event.equals(ConsultEvents.START)) {
+            String consultId = order.getConsultId();
+            Consult result = consultService.selectByConsultId(consultId);
+            result.setStartTime(LocalDateTime.now());
+            // 更新startTime
+            consultService.update(result,new UpdateWrapper<Consult>().lambda()
+            .eq(Consult::getConsultId,order.getConsultId()));
+        }
         consultStateLogic.handleAction(event, order);
     }
 
     @SneakyThrows
     @Subscribe
     public void handleEvent(GeneralEvent event) {
-        if(event.getEvent().equals(GeneralEventType.SEND)){
-            Consult consult = (Consult) event.getObject();
+        Consult consult = (Consult) event.getObject();
+
+        if(event.getEvent().equals(GeneralEventType.SEND_FINISH)){
             Consult info = consultService.selectByConsultId(consult.getConsultId());
             String finishText = event.getMessage().toString();
 //            Constants.FINISH_TEXT2
@@ -67,7 +81,11 @@ public class ConsultDomainListener {
             chatMessageService.sendFinishAdvisoryMessage(info.getDoctorId(), info.getPatientId(),
                 finishText, MessageType.Finish.name());
 
+        }else if(event.getEvent().equals(GeneralEventType.SEND_START)){
+            Order order = orderService.selectByConsultId(consult.getConsultId());
+            chatMessageService.sendOrderMessage(order.getPatientId(), order.getDoctorId(), order.getId());
         }
+
     }
 
 //    @Subscribe

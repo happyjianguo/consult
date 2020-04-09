@@ -45,6 +45,21 @@ public class ConsultInfoModel {
   /**
    * 医生ID
    */
+  private Integer price;
+
+  /**
+   * 医生头像
+   */
+  private String doctorAvatar;
+
+  /**
+   * 患者头像
+   */
+  private String patientAvatar;
+
+  /**
+   * 医生ID
+   */
   private Long doctorId;
 
   /**
@@ -63,6 +78,11 @@ public class ConsultInfoModel {
   private String department;
 
   /**
+   * 医生医院
+   */
+  private String hospital;
+
+  /**
    * 病人ID
    */
   private Long patientId;
@@ -75,26 +95,26 @@ public class ConsultInfoModel {
   /**
    * 病人年龄
    */
-  private String age;
+  private Integer age;
 
   /**
    * 病人性别
    */
-  private String gender;
+  private Integer gender;
 
   /**
    * 现病史描述
    */
-  private Long presentIllness;
+  private String presentIllness;
 
   /**
    * 既往史描述
    */
-  private Long pastHistory;
+  private String pastHistory;
 
   /**
    * 过敏史过描述
    */
-  private Long allergyHistory;
+  private String allergyHistory;
 
 }

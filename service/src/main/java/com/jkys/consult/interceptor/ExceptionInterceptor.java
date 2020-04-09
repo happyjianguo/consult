@@ -1,7 +1,7 @@
 package com.jkys.consult.interceptor;
 
-import static com.jkys.consult.common.CodeMsg.PARAMS_ERROR;
-import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.PARAMS_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
 
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.exception.ValidationException;

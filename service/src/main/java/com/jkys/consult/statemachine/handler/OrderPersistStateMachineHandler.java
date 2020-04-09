@@ -1,6 +1,6 @@
 package com.jkys.consult.statemachine.handler;
 
-import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
 
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.exception.ServerException;

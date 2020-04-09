@@ -1,8 +1,11 @@
 package com.jkys.consult.logic;
 
-import com.jkys.consult.common.BasePage;
+import com.jkys.consult.common.bean.Consult;
+import com.jkys.consult.common.component.BasePage;
 import com.jkys.consult.model.ConsultInfoModel;
-import com.jkys.consult.statemachine.enums.ConsultStatus;
+import com.jkys.consult.reponse.ConsultInfoResponse;
+import com.jkys.consult.request.ConsultInfoRequest;
+import com.jkys.consult.request.PageRequest;
 
 public interface ConsultLogic {
 
@@ -16,9 +19,25 @@ public interface ConsultLogic {
 
   ConsultInfoModel searchConsultDetail(String consultId);
 
-  BasePage<ConsultInfoModel> searchConsultList(Long patientId, String consultType, String consultState);
+  BasePage<ConsultInfoModel> searchConsultList(PageRequest<ConsultInfoRequest> pageRequest);
 
-  ConsultStatus currentConsultState(Long doctorId, Long patientId);
+  Consult currentConsultState(Long doctorId, Long patientId);
+
+  Consult currentConsultState(Long doctorId, Long patientId, Integer consultType);
+
+  ConsultInfoResponse currentConsultModelState(Long doctorId, Long patientId);
+
+  ConsultInfoResponse currentConsultModelState(Long doctorId, Long patientId, Integer consultType);
+
+  Consult unprocessedPrescribeConsult(Long patientId, Integer consultType);
+
+  Consult unprocessedExpertConsult(Long doctorId, Long patientId);
+
+  boolean triggerTerminateEvent(Long doctorId, Long patient);
+
+  boolean triggerCancelEvent(Long doctorId, Long patient);
+
+  boolean triggerMayChangeDoctorEvent(Long doctorId, Long patient);
 
 //  Boolean startConsult(String consultId);
 

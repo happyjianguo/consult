@@ -3,9 +3,13 @@ package com.jkys.consult;
 import com.google.common.base.Stopwatch;
 import com.google.gson.Gson;
 import com.jkys.consult.base.BaseTest;
-import com.jkys.consult.common.BasePage;
+import com.jkys.consult.common.component.BasePage;
+import com.jkys.consult.common.constants.Constants;
 import com.jkys.consult.logic.ConsultLogic;
 import com.jkys.consult.model.ConsultInfoModel;
+import com.jkys.consult.reponse.ConsultInfoResponse;
+import com.jkys.consult.request.ConsultInfoRequest;
+import com.jkys.consult.request.PageRequest;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
 import lombok.extern.slf4j.Slf4j;
@@ -26,11 +30,9 @@ public class consultTest extends BaseTest {
   @Autowired
   OrderInfoRpcService orderInfoRpcService;
 
-  private String consultId;
-
-  private String orderId;
-
   private static Stopwatch stopwatch;
+
+  Gson gson = new Gson();
 
   @BeforeEach
   void setUp() {
@@ -47,12 +49,21 @@ public class consultTest extends BaseTest {
    */
   @Test
   public void testSearchConsultList(){
-    long patientId = 2L;
-    String consultType = "1";
-    String consultState = "待支付";
-    BasePage<ConsultInfoModel> page = consultInfoRpcService.searchConsultList(patientId, consultType, consultState);
-    Gson gson = new Gson();
+    ConsultInfoRequest request = ConsultInfoRequest.builder()
+        .patientId(patientId)
+        .consultState("待支付")
+        .consultType(Constants.EXPERT_CONSULT_TYPE)
+        .build();
+    PageRequest page = PageRequest.builder()
+        .pageNo(1)
+        .pageSize(5)
+        .request(request)
+        .build();
     log.info(gson.toJson(page));
+
+    BasePage<ConsultInfoModel> basePage = consultInfoRpcService.searchConsultList(page);
+
+    log.info(gson.toJson(basePage));
   }
 
   /**
@@ -65,4 +76,9 @@ public class consultTest extends BaseTest {
     log.info(gson.toJson(result));
   }
 
+  @Test
+  public void testCurrentConsultModelState(){
+    ConsultInfoResponse response = consultInfoRpcService.currentConsultModelState(doctorId,patientId, 1);
+    log.info(gson.toJson(response));
+  }
 }

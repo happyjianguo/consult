@@ -1,6 +1,6 @@
 package com.jkys.consult.infrastructure.rpc.coincenter;
 
-import static com.jkys.consult.common.CodeMsg.ASK_PAY_FAIL;
+import static com.jkys.consult.common.component.CodeMsg.ASK_PAY_FAIL;
 
 import com.jkys.coincenter.enums.SourceEnum;
 import com.jkys.coincenter.rpc.CoinCenterPatientService;
@@ -12,12 +12,9 @@ import com.jkys.coincenter.rpc.response.CoinRechargeResponse;
 import com.jkys.coincenter.rpc.response.QueryOrderPayResultModel;
 import com.jkys.coincenter.rpc.response.QueryOrderPayResultResponse;
 import com.jkys.consult.common.bean.Order;
-import com.jkys.consult.common.bean.PatientAdvisoryInfo;
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
-import com.jkys.consult.shine.bean.PatientAdvisoryOrder;
 import com.jkys.consult.shine.mapper.DoctorAdvisoryPriceMapper;
-import com.jkys.consult.shine.mapper.PatientAdvisoryInfoMapper;
 import com.jkys.consult.shine.service.AppConfig;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +28,8 @@ public class CoinCenterRemoteRpcService {
 
   @Resource
   private AppConfig appConfig;
-  @Resource
-  private PatientAdvisoryInfoMapper patientAdvisoryInfoMapper;
+//  @Resource
+//  private PatientAdvisoryInfoMapper patientAdvisoryInfoMapper;
   @Resource
   private ChatMessageService chatMessageService;
   @Resource
@@ -43,73 +40,89 @@ public class CoinCenterRemoteRpcService {
   private final static Object lock = "lock";
 
   //云币中心加云币
-  Boolean isIncreaseCoin(PatientAdvisoryOrder order) {
-    if (order.getCostCoin() == 0) {
-      return true;
-    }
+  public Boolean isIncreaseCoin(Order order) {
     try {
       CoinCenterPatientRequest request = new CoinCenterPatientRequest();
-      request.setCoinCount(order.getCostCoin());
+      request.setCoinCount(order.getPrice());
       request.setUserId(order.getPatientId());
-      request.setSeriablize(order.getBizCode());
+      request.setSeriablize(order.getOrderId());
       request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
       CoinCenterPatientResponse res = coinCenterPatientService.increasePatientCoin(request);
-      log.info("isIncreaseCoin number:{},订单：{}，金额：{}", order.getOrderNum(), order.getBizCode(),
-          order.getCostCoin());
+      log.info("isIncreaseCoin number:{}, 金额：{}", order.getOrderId(), order.getPrice());
       if (res == null || !res.getSuccess()) {
-        log.warn("isIncreaseCoin false Exception orderNum:{}", order.getOrderNum());
+        log.warn("isIncreaseCoin false Exception orderId:{}", order.getOrderId());
         return false;
       }
       return true;
     } catch (Exception e) {
-      log.error("isIncreaseCoin error orderNum:{}", order.getOrderNum(), e);
+      log.error("isIncreaseCoin error orderId:{}", order.getOrderId(), e);
     }
     return false;
   }
 
   //云币中心扣云币
-  public Boolean isDecreasePatientCoin(Order order, Integer coin) {
-    if (coin == 0) {
-      return true;
-    }
+  public Boolean isDecreasePatientCoin(Order order) {
+
     try {
       CoinCenterPatientRequest request = new CoinCenterPatientRequest();
-      request.setCoinCount(coin);
+      request.setCoinCount(order.getPrice());
       request.setUserId(order.getPatientId());
       request.setSeriablize(order.getOrderId());
       request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
       CoinCenterPatientResponse res = coinCenterPatientService.decreasePatientCoin(request);
       if (res == null || !res.getSuccess()) {
-        log.warn("isDecreasePatientCoin false  orderNum:{}", order.getOrderId());
+        log.warn("isDecreasePatientCoin false  orderId:{}", order.getOrderId());
         return false;
       }
-      log.info("isDecreasePatientCoin result orderNum:{},Seriablize:{},{}", order.getOrderId(),
-          res.getSuccess());
+      log.info("isDecreasePatientCoin result 流水号:{}, {}", order.getOrderId(), res.getSuccess());
       return res.getSuccess();
     } catch (Exception e) {
-      log.error("isDecreasePatientCoin error orderNum:{}", order.getOrderId(), e);
+      log.error("isDecreasePatientCoin error orderId:{}", order.getOrderId(), e);
     }
     return false;
   }
 
-  //云币中心查询处理结果
-  public Boolean hasSuccessHandle(PatientAdvisoryOrder order) {
+  /**
+   * 云币中心获取云币
+   *
+   * @param userId 用户id
+   * @return 糖币余额
+   */
+  public Integer coinCount(Long userId) {
+    CoinCenterPatientRequest request = new CoinCenterPatientRequest();
+    request.setUserId(userId);
+    request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
+    Integer coin = 0;
     try {
-      CoinCenterPatientRequest request = new CoinCenterPatientRequest();
-      request.setUserId(order.getPatientId());
-      request.setSeriablize(order.getBizCode());
-      request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
-      CoinCenterPatientResponse res = coinCenterPatientService.hasSuccessHandle(request);
-      if (res == null || !res.getSuccess()) {
-        log.warn("hasSuccessHandle false Exception orderNum:{}", order.getOrderNum());
-        return false;
+      CoinCenterPatientResponse response = coinCenterPatientService.findPatientCoinCount(request);
+      if (response != null && response.getCoinCount() != null) {
+        coin = response.getCoinCount();
       }
-      return true;
+      log.info("云币中心获取云币 结果，userId:{},{}", userId, coin);
     } catch (Exception e) {
-      log.error("hasSuccessHandle error orderNum:{}", order.getOrderNum(), e);
+      log.error("云币中心获取云币 异常，userId= {}", userId, e);
     }
-    return false;
+    return coin;
   }
+
+  //云币中心查询处理结果
+//  public Boolean hasSuccessHandle(PatientAdvisoryOrder order) {
+//    try {
+//      CoinCenterPatientRequest request = new CoinCenterPatientRequest();
+//      request.setUserId(order.getPatientId());
+//      request.setSeriablize(order.getBizCode());
+//      request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
+//      CoinCenterPatientResponse res = coinCenterPatientService.hasSuccessHandle(request);
+//      if (res == null || !res.getSuccess()) {
+//        log.warn("hasSuccessHandle false Exception orderNum:{}", order.getOrderNum());
+//        return false;
+//      }
+//      return true;
+//    } catch (Exception e) {
+//      log.error("hasSuccessHandle error orderNum:{}", order.getOrderNum(), e);
+//    }
+//    return false;
+//  }
 
   /**
    * 根据订单ID判断是否支付成功
@@ -178,38 +191,37 @@ public class CoinCenterRemoteRpcService {
     return response;
   }
 
-  // TODO ---- 医生价格 ------> todoByliming
-  public Integer doctorPrice(Long doctorId) {
-    Integer price = doctorAdvisoryPriceMapper.queryDoctorAdvisoryPrice(doctorId);
-    return price != null ? price : appConfig.getCostCoin();
-  }
-
-  public Integer doctorOrigin(Long doctorId) {
-    Integer price = doctorAdvisoryPriceMapper.queryDoctorAdvisoryPrice(doctorId);
-    return price != null ? price : appConfig.getOriginalCoin();
-  }
+//  public Integer doctorPrice(Long doctorId) {
+//    Integer price = doctorAdvisoryPriceMapper.queryDoctorAdvisoryPrice(doctorId);
+//    return price != null ? price : appConfig.getCostCoin();
+//  }
+//
+//  public Integer doctorOrigin(Long doctorId) {
+//    Integer price = doctorAdvisoryPriceMapper.queryDoctorAdvisoryPrice(doctorId);
+//    return price != null ? price : appConfig.getOriginalCoin();
+//  }
 
   /**
    * 更新未回复的时间信息
    */
-  public void updateNoRepeatWaitingTime(PatientAdvisoryInfo info) {
-    Long firstTime = chatMessageService
-        .queryFirstMessageDateTime(info.getDoctorId(), info.getPatientId(),
-            info.getStartTime());
-    PatientAdvisoryInfo updateInfo = new PatientAdvisoryInfo();
-    final Long nd = 1000 * 24 * 60 * 60L; //一天
-    final long nh = 1000 * 60 * 60L;//一小时
-    final long nm = 1000 * 60L;//一分钟
-    Long diff = firstTime > 0 && firstTime > info.getStartTime().getTime() ?
-        firstTime - info.getStartTime().getTime()
-        : System.currentTimeMillis() - info.getStartTime().getTime();
-    //转换为10.44形式的值，将天转为小时，整数为小时，小数为分钟
-    updateInfo.setWaiting((diff / nd * 24d) + diff % nd / nh + (diff % nd % nh / nm / 100d));
-    if (firstTime > info.getStartTime().getTime()) {
-      updateInfo.setRepeatStatus(1);
-    }
-    updateInfo.setId(info.getId());
-    patientAdvisoryInfoMapper.updateOrderUserInfo(updateInfo);
-  }
+//  public void updateNoRepeatWaitingTime(PatientAdvisoryInfo info) {
+//    Long firstTime = chatMessageService
+//        .queryFirstMessageDateTime(info.getDoctorId(), info.getPatientId(),
+//            info.getStartTime());
+//    PatientAdvisoryInfo updateInfo = new PatientAdvisoryInfo();
+//    final Long nd = 1000 * 24 * 60 * 60L; //一天
+//    final long nh = 1000 * 60 * 60L;//一小时
+//    final long nm = 1000 * 60L;//一分钟
+//    Long diff = firstTime > 0 && firstTime > info.getStartTime().getTime() ?
+//        firstTime - info.getStartTime().getTime()
+//        : System.currentTimeMillis() - info.getStartTime().getTime();
+//    //转换为10.44形式的值，将天转为小时，整数为小时，小数为分钟
+//    updateInfo.setWaiting((diff / nd * 24d) + diff % nd / nh + (diff % nd % nh / nm / 100d));
+//    if (firstTime > info.getStartTime().getTime()) {
+//      updateInfo.setRepeatStatus(1);
+//    }
+//    updateInfo.setId(info.getId());
+//    patientAdvisoryInfoMapper.updateOrderUserInfo(updateInfo);
+//  }
 
 }

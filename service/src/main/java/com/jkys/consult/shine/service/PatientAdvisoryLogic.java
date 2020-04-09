@@ -1,6 +1,6 @@
 package com.jkys.consult.shine.service;
 
-import static com.jkys.consult.common.CodeMsg.ASK_PAY_FAIL;
+import static com.jkys.consult.common.component.CodeMsg.ASK_PAY_FAIL;
 
 import com.jkys.coincenter.enums.SourceEnum;
 import com.jkys.coincenter.rpc.CoinCenterPatientService;
@@ -15,6 +15,7 @@ import com.jkys.common.db.SequenceGenerator;
 import com.jkys.consult.common.bean.PatientAdvisoryInfo;
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
+import com.jkys.consult.infrastructure.rpc.usercenter.UserCenterUserService;
 import com.jkys.consult.shine.bean.PatientAdvisoryOrder;
 import com.jkys.consult.shine.mapper.DoctorAdvisoryPriceMapper;
 import com.jkys.consult.shine.mapper.PatientAdvisoryInfoMapper;

@@ -1,4 +1,4 @@
-package com.jkys.consult.common;
+package com.jkys.consult.common.component;
 
 public interface PageMapper<T> extends SuperMapper<T> {
 

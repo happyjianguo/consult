@@ -24,7 +24,7 @@ public class OrderPayRequest {
     /**
      * 医生id
      */
-    private Long doctorId;
+//    private Long doctorId;
 
     /**
      * 病人id

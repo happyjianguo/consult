@@ -1,9 +1,9 @@
 //package com.jkys.consult.shine.service;
 //
-//import static com.jkys.consult.common.CodeMsg.COIN_EXIST;
-//import static com.jkys.consult.common.CodeMsg.INVALID_ORDER;
-//import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
-//import static com.jkys.consult.shine.enums.ExceptionMessage.COIN_FAIL;
+//import static com.jkys.consult.common.component.CodeMsg.COIN_EXIST;
+//import static com.jkys.consult.common.component.CodeMsg.INVALID_ORDER;
+//import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+//import static com.jkys.consult.common.component.ExceptionMessage.COIN_FAIL;
 //
 //import com.alibaba.fastjson.JSONObject;
 //import com.jkys.coincenter.enums.SourceEnum;

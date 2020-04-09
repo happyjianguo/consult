@@ -2,6 +2,7 @@ package com.jkys.consult.service.order;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
+import com.jkys.consult.reponse.PayOrderResponse;
 import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.phobos.annotation.Service;
 import org.springframework.validation.annotation.Validated;
@@ -14,6 +15,6 @@ public interface OrderInfoRpcService {
   Boolean cancelOrder(@JsonRpcParam("orderId") String orderId);
 
   // TODO ---- 如何测试 ------> todoByliming
-  Boolean payOrder(@JsonRpcParam("request") OrderPayRequest request);
+  PayOrderResponse payOrder(@JsonRpcParam("request") OrderPayRequest request);
 
 }

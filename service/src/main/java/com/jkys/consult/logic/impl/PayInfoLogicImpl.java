@@ -1,40 +1,43 @@
 package com.jkys.consult.logic.impl;
 
-import static com.jkys.consult.common.CodeMsg.COIN_EXIST;
-import static com.jkys.consult.common.CodeMsg.INVALID_ORDER;
-import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
-import static com.jkys.consult.shine.enums.ExceptionMessage.COIN_FAIL;
+import static com.jkys.consult.common.component.CodeMsg.COIN_EXIST;
+import static com.jkys.consult.common.component.CodeMsg.INVALID_ORDER;
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.constants.Constants.COIN_FAIL;
+import static com.jkys.consult.common.constants.Constants.COIN_INSUFFICIENT;
+import static com.jkys.consult.common.constants.Constants.COIN_SUCCESS;
+import static com.jkys.consult.common.constants.Constants.RETRY_TIMES_4_PAY;
+import static com.jkys.consult.common.constants.Constants.ZERO;
 
-import com.alibaba.fastjson.JSONObject;
-import com.jkys.coincenter.enums.SourceEnum;
+import com.google.gson.Gson;
 import com.jkys.coincenter.rpc.CoinCenterPatientService;
-import com.jkys.coincenter.rpc.request.CoinCenterPatientRequest;
-import com.jkys.coincenter.rpc.response.CoinCenterPatientResponse;
 import com.jkys.coincenter.rpc.response.CoinRechargeResponse;
 import com.jkys.consult.common.bean.Order;
-import com.jkys.consult.common.bean.PatientAdvisoryInfo;
+import com.jkys.consult.common.constants.Constants;
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
 import com.jkys.consult.infrastructure.rpc.coincenter.CoinCenterRemoteRpcService;
+import com.jkys.consult.infrastructure.rpc.member.MemberService;
+import com.jkys.consult.infrastructure.rpc.usercenter.UserCenterUserService;
+import com.jkys.consult.logic.DoctorIncomeLogic;
 import com.jkys.consult.logic.PayInfoLogic;
-import com.jkys.consult.model.CoinOrderModel;
+import com.jkys.consult.reponse.PayOrderResponse;
 import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.consult.service.OrderService;
 import com.jkys.consult.shine.service.MqServer;
 import com.jkys.consult.shine.service.RedisService;
-import com.jkys.consult.shine.service.UserCenterUserService;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import com.jkys.phobos.ApiGateway;
-import com.jkys.pt.client.service.member.MemberAdvisoryRpcService;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 /**
- * @author yangZh
- * @since 2018/7/13
- **/
+ * 支付订单
+ */
 @Slf4j
 @Service
 public class PayInfoLogicImpl implements PayInfoLogic {
@@ -48,24 +51,83 @@ public class PayInfoLogicImpl implements PayInfoLogic {
   @Resource
   private CoinCenterRemoteRpcService coinCenterRemoteRpcService;
   @Resource
+  private UserCenterUserService userCenterUserService;
+  @Resource
+  private MemberService memberService;
+  @Resource
   private RedisService redisService;
   @Resource
   private MqServer mqServer;
-  @Resource
-  private UserCenterUserService userCenterUserService;
-  @Resource
-  private MemberAdvisoryRpcService memberAdvisoryRpcService;
 
   private static final Integer REDIS_TIMEOUT = 10;//重复发起支付间隔 10秒
   private static final Long PAY_TIMEOUT = 1000L; //自循环间隔时间 毫秒
 
-  public Integer getMemberFree(Long patientId, Long doctorId){
-    Integer memberFree = 0;
-    if (userCenterUserService.isMember(patientId)) {
-      memberFree = memberAdvisoryRpcService
-          .getFreeAdvisoryByDocId(patientId, doctorId);
+  private PayOrderResponse deductMemberFreeTimes(Order order, OrderPayRequest request) {
+
+    // TODO ---- 等 谢春为 添加完会员权益接口 ------> todoByliming
+    Long patientId = order.getPatientId();
+    Long doctorId = order.getDoctorId();
+    String client = request.getClient();
+
+    boolean deductMemberFreeTimes = memberService
+        .deductMemberFreeTimes(order.getOrderId(), patientId, doctorId, client, request.getMock());
+
+    if (deductMemberFreeTimes) {
+      return PayOrderResponse.builder()
+          .coinPay(COIN_SUCCESS)
+          .consultId(order.getConsultId())
+          .orderId(order.getOrderId())
+          .price(ZERO)
+          .build();
+    } else {
+      return null;
     }
-    return memberFree;
+  }
+
+  private PayOrderResponse deductCoin(Order order, Integer coin, Integer reTryTimes,
+      Integer coinPay) {
+    Integer price = order.getPrice();
+    if (coin < price) {
+      coinPay = COIN_INSUFFICIENT;//余额不足
+    }
+    try {
+      if (coin >= price) {
+        if (!coinCenterRemoteRpcService.isDecreasePatientCoin(order)) {
+          coinPay = COIN_FAIL;
+//          throw new ServerException(SERVER_ERROR, COIN_FAIL);
+        } else {
+          coinPay = COIN_SUCCESS;
+        }
+      }
+      Thread.sleep(PAY_TIMEOUT);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      throw new ServerException(SERVER_ERROR, e.getMessage());
+    }
+
+    if (!coinPay.equals(Constants.COIN_FAIL) || --reTryTimes < 0) {
+      coin = coinPay.equals(COIN_SUCCESS) ? coin - price : coin;
+      return PayOrderResponse.builder()
+          .consultId(order.getConsultId())
+          .orderId(order.getOrderId())
+          .coinPay(coinPay)
+          .coin(coin - price)
+          .price(price)
+          .build();
+    } else {
+      return deductCoin(order, coin, reTryTimes, coinPay);
+    }
+  }
+
+  private PayOrderResponse deductCoin(Order order, OrderPayRequest request) {
+    Long patientId = order.getPatientId();
+    int reTryTimes = request.getReTry() ? ZERO : RETRY_TIMES_4_PAY;
+
+    // 获取云币余额
+    Integer coin = coinCenterRemoteRpcService.coinCount(patientId);
+
+    Integer coinPay = COIN_FAIL;
+    return deductCoin(order, coin, reTryTimes, coinPay);
   }
 
   /**
@@ -74,119 +136,54 @@ public class PayInfoLogicImpl implements PayInfoLogic {
    * @param request 使用 医生id  病人id
    */
   @Override
-  public CoinOrderModel payGo(OrderPayRequest request) {
-    // TODO ---- 测试用 ------> todoByliming
-    if(request.getMock()) {
-      return new CoinOrderModel();
-    }
-
+  public PayOrderResponse payGo(OrderPayRequest request) {
     // TODO ---- 查找咨询单 ------> todoByliming
     // TODO 最后需要用网关
 //    Long patientId = ApiGateway.getUserId();
-    Long patientId = request.getPatientId();
-    String orderId = request.getOrderId();
-    Long doctorId = request.getDoctorId();
 
-    Order order = orderService.selectByOrderId(orderId);
+    Order order = orderService.selectByOrderId(request.getOrderId());
 
-    Integer price = order.getPrice();
+    PayOrderResponse model;
 
-    Integer memberFree = getMemberFree(patientId, doctorId);
-    if (memberFree != null && memberFree > 0) {
-      price = 0;
+    try {
+      model = deductMemberFreeTimes(order, request);
+
+      if (ObjectUtils.isEmpty(model)) {
+        model = deductCoin(order, request);
+      }
+    } catch (ServerException e) {
+      log.warn("确认支付 发生错误，doctorId:{},patientId:{},{}", order.getDoctorId(), order.getPatientId(),
+          e.getMessage());
+      throw e;
+    } catch (Exception e) {
+      log.warn("确认支付 发生错误，doctorId:{},patientId:{},{}", order.getDoctorId(), order.getPatientId(),
+          e.getMessage());
+      throw new ServerException(SERVER_ERROR, e.getMessage());
     }
 
-    CoinOrderModel model = new CoinOrderModel();
-    boolean success = false;
-    model.setPrice(price);
-    int times = 0;
-    while (times < 3) {
-      times++;
-      //处理云币余额扣款
-      Integer coin = coinCount(patientId);
-      model.setCoin(coin);
-      if (coin < price) {
-        model.setCoinPay(2);//余额不足
-      }
-      if (coin >= price) {
-        if (!coinCenterRemoteRpcService.isDecreasePatientCoin(order, price)) {
-          throw new ServerException(SERVER_ERROR, COIN_FAIL);
-        }
-        model.setCoinPay(1);
-        success = true;
-        model.setCoin(coin - price);
-        break;
-      }
-      if (!request.getReTry()) {
-        break;
-      }
-      try {
-        Thread.sleep(PAY_TIMEOUT);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
-
-    PatientAdvisoryInfo info = null;
-    //        PatientAdvisoryInfo info = patientAdvisoryInfoMapper.findByDocAndPatient(request.getDoctorId(), patientId);
-    if (success) {
-      if (memberFree != null && memberFree > 0) {
-        boolean member = memberAdvisoryRpcService.addFreeAdvisory(info.getId(), patientId,
-            info.getDoctorId(), request.getClient());
-        if (!member) {
-          throw new ServerException(SERVER_ERROR, "请检查您的会员咨询权限或退出重试!");
-        }
-      }
-
-      // TODO ---- 12和24小时以支付时间为准，也就是订单支付状态PAYED ------> todoByliming
-//      patientAdvisoryInfoMapper.updateOrderStatusStart(info.getId(),
-//          System.currentTimeMillis() + Constants.EXPIRE_TIME);
-//                patientAdvisoryOrderMapper.updateOrderStatus(OrderStatus.PAY_SUCCESS.getCode(), order.getBizCode());
-
-      chatMessageService.sendOrderMessage(info.getPatientId(), info.getDoctorId(), info.getId());
-
-    }
-//        } catch (ShineServiceException s) {
-//            log.warn("确认支付 发生错误，doctorId:{},patientId:{},{}", request.getDoctorId(), patientId, s.getMessage());
-//            throw s;
-//        } catch (Exception e) {
-//            log.error("确认支付 订单异常，patient= {}", patientId, e);
-//            throw new ShineServiceException(ExceptionCode.FAIL);
-//        } finally {
-//            if (model.getCoinPay() == 0 && order != null) {
-//                log.info("确认支付 支付失败，doctorId:{},patientId:{},orderNum:{}", request.getDoctorId(), patientId,
-//                        order.getOrderNum());
-//                patientAdvisoryOrderMapper.updateOrderStatus(OrderStatus.PAY_FAIL.getCode(), order.getBizCode());
-//
-//            }
-//        }
-//        }
-//    model.setId(order.getId());
-
-    // TODO ---- 捕获异常，支付异常处理 ------> todoByliming
-    //            log.warn("确认支付 发生错误，doctorId:{},patientId:{},{}", request.getDoctorId(), patientId, s.getMessage());
-
-    model.setOrderId(order.getOrderId());
-//    model.setInfoId(info.getId());
-//    model.setBizCode(order.getConsultId());
-//    model.setSuccess(true);
-    log.info("确认支付 返回结果，result:{}", JSONObject.toJSONString(model));
+    Gson gson = new Gson();
+    log.info("确认支付 返回结果，result:{}", gson.toJson(model));
     return model;
   }
 
+  @Autowired
+  DoctorIncomeLogic doctorIncomeLogic;
+
   @Override
-  public CoinOrderModel queryCoin(Long userId, Long doctorId) {
-    log.info("咨询订单用户云币查询查询 请求开始，patientId:{},doctorId:{}", userId, doctorId);
-    Long patientId = ApiGateway.getUserId();
+  @Deprecated
+  public PayOrderResponse queryCoin(Long patientId, Long doctorId) {
+    log.info("咨询订单用户云币查询查询 请求开始，patientId:{},doctorId:{}", patientId, doctorId);
+    patientId = ObjectUtils.isEmpty(patientId) ? ApiGateway.getUserId() : patientId;
     if (doctorId == null || patientId == null) {
       log.warn("咨询订单用户云币查询查询：参数异常！");
       throw new ServerException(SERVER_ERROR, "咨询订单用户云币查询：参数异常！");
     }
-    CoinOrderModel model = new CoinOrderModel();
+    PayOrderResponse model = new PayOrderResponse();
     try {
       //云币中心获取云币余额
-      model.setCoin(coinCount(patientId));
-      model.setPrice(coinCenterRemoteRpcService.doctorPrice(doctorId));
+      model.setCoin(coinCenterRemoteRpcService.coinCount(patientId));
+//      model.setPrice(coinCenterRemoteRpcService.doctorPrice(doctorId));
+      model.setPrice(doctorIncomeLogic.getDoctorPrice(doctorId));
 //      model.setOriginalCoin(coinCenterRemoteRpcService.doctorOrigin(doctorId));
 //      model.setSuccess(true);
     } catch (Exception e) {
@@ -197,13 +194,13 @@ public class PayInfoLogicImpl implements PayInfoLogic {
   }
 
   @Override
-  public CoinOrderModel payString(String bizCode, int payWay) {
+  public PayOrderResponse payString(String bizCode, int payWay) {
     log.info("咨询订单获取支付串：orderNum={}，payWay={}", bizCode, payWay);
     if (StringUtils.isEmpty(bizCode) || ApiGateway.getUserId() == null) {
       log.warn("咨询订单支付糖币：参数异常！");
       throw new ServerException(SERVER_ERROR, "咨询订单支付糖币：参数异常！");
     }
-    CoinOrderModel model = new CoinOrderModel();
+    PayOrderResponse model = new PayOrderResponse();
 //    model.setSuccess(false);
 //        try {
     Order order = orderService.selectByOrderId(bizCode);
@@ -213,7 +210,7 @@ public class PayInfoLogicImpl implements PayInfoLogic {
       throw new ServerException(INVALID_ORDER);
     }
     // 云币中心获取余额
-    Integer coin = coinCount(order.getPatientId());
+    Integer coin = coinCenterRemoteRpcService.coinCount(order.getPatientId());
 //            Integer price = coinCenterRemoteRpcService.doctorPrice(order.getDoctorId());
     if (coin >= order.getPrice()) {
       // TODO 再看看是否这么处理
@@ -244,29 +241,6 @@ public class PayInfoLogicImpl implements PayInfoLogic {
         }*/
 
     return model;
-  }
-
-  /**
-   * 云币中心获取云币
-   *
-   * @param userId 用户id
-   * @return 糖币余额
-   */
-  private Integer coinCount(Long userId) {
-    CoinCenterPatientRequest request = new CoinCenterPatientRequest();
-    request.setUserId(userId);
-    request.setSource(SourceEnum.ORDER_ADVISORY.getSource());
-    Integer coin = 0;
-    try {
-      CoinCenterPatientResponse response = coinCenterPatientService.findPatientCoinCount(request);
-      if (response != null && response.getCoinCount() != null) {
-        coin = response.getCoinCount();
-      }
-      log.info("云币中心获取云币 结果，userId:{},{}", userId, coin);
-    } catch (Exception e) {
-      log.error("云币中心获取云币 异常，userId= {}", userId, e);
-    }
-    return coin;
   }
 
 //    @Override

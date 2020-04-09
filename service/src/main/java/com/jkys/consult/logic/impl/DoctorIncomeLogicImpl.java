@@ -1,22 +1,19 @@
 package com.jkys.consult.logic.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.jkys.consult.common.BasePage;
 import com.jkys.consult.common.bean.DoctorConsultPrice;
 import com.jkys.consult.common.bean.Order;
+import com.jkys.consult.common.component.BasePage;
+import com.jkys.consult.infrastructure.rpc.usercenter.UserCenterUserService;
 import com.jkys.consult.logic.DoctorIncomeLogic;
-import com.jkys.consult.reponse.DoctorConsultPriceResponse;
+import com.jkys.consult.model.DoctorIncomeModel;
+import com.jkys.consult.reponse.DoctorIncomeResponse;
 import com.jkys.consult.request.DoctorIncomeRequest;
 import com.jkys.consult.request.DoctorPriceRequest;
 import com.jkys.consult.request.PageRequest;
 import com.jkys.consult.service.DoctorConsultPriceService;
 import com.jkys.consult.service.OrderService;
-import com.jkys.consult.model.DoctorIncomeModel;
-import com.jkys.consult.reponse.DoctorIncomeResponse;
 import com.jkys.consult.shine.service.SystemSettingServcie;
-import com.jkys.consult.shine.service.UserCenterUserService;
-import com.jkys.consult.shine.utils.DateUtils;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,17 +55,7 @@ public class DoctorIncomeLogicImpl implements DoctorIncomeLogic {
 
     DoctorIncomeResponse doctorIncomeResponse = new DoctorIncomeResponse();
 
-    String startDate = DateUtils.getFirstDayOfMonth(date);
-    String endDate = DateUtils.getFirstDayOfNextMonth(date);
-
-    page = orderService.page(page,
-        new QueryWrapper<Order>().lambda()
-            .nested(i -> i.eq(Order::getStatus, OrderStatus.PAYED)
-                .between(Order::getGmtCreate, startDate, endDate)));
-
-//    List<Order> list = orderService.list(new QueryWrapper<Order>().lambda()
-//        .nested(i -> i.eq(Order::getStatus, OrderStatus.PAYED)
-//            .between(Order::getGmtCreate, startDate, endDate)));
+    page = orderService.pageOrderByStatusAndDuration(OrderStatus.PAYED, date, page);
 
     List<Order> list = page.getRecords();
 
@@ -78,7 +65,7 @@ public class DoctorIncomeLogicImpl implements DoctorIncomeLogic {
 
     List<DoctorIncomeModel> incomeModelList = list.stream()
         .map(order -> {
-          // TODO ---- 转换待做 ------> todoByliming
+          // TODO ---- 转换待做 医生端prd什么时候定下来 需要返回哪些信息------> todoByliming
           DoctorIncomeModel doctorIncomeModel = new DoctorIncomeModel();
           doctorIncomeModel.setPrice(order.getPrice());
           return doctorIncomeModel;
@@ -88,62 +75,28 @@ public class DoctorIncomeLogicImpl implements DoctorIncomeLogic {
     doctorIncomeResponse.setTotal(total);
     doctorIncomeResponse.setIncomeDetails(incomeModelList);
     return doctorIncomeResponse;
-
-//    BasePage<PatientAdvisoryOrder> doctorIncome = patientAdvisoryOrderMapper
-//        .queryDoctorIncome(doctorId, startDate, endDate, request);
-
-//    Integer total = patientAdvisoryOrderMapper
-//        .queryDoctorTotalIncome(doctorId, startDate, endDate);
-
-//    if (doctorIncome == null || doctorIncome.size() == 0) {
-//      return doctorIncomeResponse;
-//    }
-
-
-/*
-    // 转换输出
-    List<DoctorIncomeModel> incomeDetail = new ArrayList<>(doctorIncome.size());
-    for (PatientAdvisoryOrder advisoryOrder : doctorIncome) {
-      DoctorIncomeModel doctorIncomeModel = new DoctorIncomeModel();
-      doctorIncomeModel
-          .setTime(DateUtils.formatDate(advisoryOrder.getGmtCreate(), DateUtils.MMdd_SPLIT));
-      doctorIncomeModel.setPrice(advisoryOrder.getAmount());
-      doctorIncomeModel.setId(advisoryOrder.getId());
-      doctorIncomeModel.setPatientId(advisoryOrder.getPatientId());
-      doctorIncomeModel.setDoctorId(advisoryOrder.getDoctorId());
-      // 如果退款价格为负数,价格为负数
-      // TODO ---- 退款逻辑，重写 ------> todoByliming
-      if (OrderType.BACK.name().equals(advisoryOrder.getType())) {
-        doctorIncomeModel.setPrice(-doctorIncomeModel.getPrice());
-      }
-      doctorIncomeModel.setTitle("图文咨询 " + advisoryOrder.getBizCode());
-      // 添加doctor_id patient_id 跳转到详情页面
-      incomeDetail.add(doctorIncomeModel);
-    }
-    */
-//    doctorIncomeResponse.setTotal(total);
-//    doctorIncomeResponse.setIncomeDetail(incomeDetail);
-//    return doctorIncomeResponse;
   }
 
+  // TODO ---- 顾问和客户的价格怎么设置 ------> todoByliming
   @Override
-  public DoctorConsultPriceResponse getDoctorPrice(Long doctorId) {
+  public Integer getDoctorPrice(Long doctorId) {
     // TODO ----  ------> todoByliming
 //        String doctorId =  ApiGateway.getUserId();
     log.info("查询医生咨询价格设置:{}", doctorId);
     Integer price = doctorConsultPriceService.getDoctorConsultPrice(doctorId);
 //    DoctorAdvisoryPrice doctorAdvisoryPrice = systemSettingServcie.queryDoctorPrice();
-
-    DoctorConsultPriceResponse response = new DoctorConsultPriceResponse();
-    // 没有设置咨询价格
-    if (price == null) {
-      response.setPrice(0);
-      response.setUserDefined(false);
-    } else {
-      response.setPrice(price);
-      response.setUserDefined(true);
-    }
-    log.info("getQueryDoctorAdvisoryPrice：服务价格：{},{}", doctorId, response.getPrice());
+//    return price != null ? price : appConfig.getCostCoin();
+    log.info("getQueryDoctorAdvisoryPrice：服务价格：{},{}", doctorId, price);
+    return price != null ? price : 0;
+//    DoctorConsultPriceResponse response = new DoctorConsultPriceResponse();
+//    // 没有设置咨询价格
+//    if (price == null) {
+//      response.setPrice(0);
+//      response.setUserDefined(false);
+//    } else {
+//      response.setPrice(price);
+//      response.setUserDefined(true);
+//    }
 
     // TODO ---- 验证医生是什么 ------> todoByliming
     // 是否为验证医生
@@ -154,8 +107,6 @@ public class DoctorIncomeLogicImpl implements DoctorIncomeLogic {
 //
 //    response.setEffectiveRange(doctorAdvisoryPrice.getRange());
 
-    // TODO ---- 响应内容，待定 ------> todoByliming
-    return response;
   }
 
   @Override
@@ -166,13 +117,25 @@ public class DoctorIncomeLogicImpl implements DoctorIncomeLogic {
     Integer price = request.getPrice();
     log.info("修改医生咨询价格设置,{},{}", doctorId, price);
 
+    // TODO ---- 判断参数是否合法 ------> todoByliming
+//    DoctorPriceResponse response = new DoctorPriceResponse();
+//    if (price == null) {
+//      response.setPrice(0);
+//      response.setUserDefined(false);
+//    } else {
+//      response.setPrice(price);
+//      response.setUserDefined(true);
+//    }
+
     DoctorConsultPrice doctorConsultPrice = DoctorConsultPrice.builder()
         .doctorId(doctorId)
         .price(price)
         .build();
+
     boolean result = doctorConsultPriceService.saveOrUpdate(doctorConsultPrice,
         new UpdateWrapper<DoctorConsultPrice>().lambda()
             .eq(DoctorConsultPrice::getDoctorId, doctorId));
+
     return result;
 
     // TODO ---- 设置医生默认价格 ------> todoByliming

@@ -1,7 +1,6 @@
 package com.jkys.consult.soa;
 
 import com.jkys.consult.logic.DoctorIncomeLogic;
-import com.jkys.consult.reponse.DoctorConsultPriceResponse;
 import com.jkys.consult.request.DoctorPriceRequest;
 import com.jkys.consult.request.PageRequest;
 import com.jkys.consult.service.doctor.DoctorIncomeRpcService;
@@ -28,7 +27,7 @@ public class DoctorIncomeRpcServiceImpl implements DoctorIncomeRpcService {
     }
 
     @Override
-    public DoctorConsultPriceResponse getDoctorPrice(Long doctorId) {
+    public Integer getDoctorPrice(Long doctorId) {
         return doctorIncomeLogic.getDoctorPrice(doctorId);
     }
 

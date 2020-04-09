@@ -1,11 +1,15 @@
 package com.jkys.consult;
 
 import com.google.common.base.Stopwatch;
+import com.google.gson.Gson;
 import com.jkys.consult.base.BaseTest;
 import com.jkys.consult.logic.ConsultLogic;
+import com.jkys.consult.reponse.ConsultInfoResponse;
+import com.jkys.consult.reponse.PayOrderResponse;
+import com.jkys.consult.request.ConsultInfoRequest;
+import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
-import com.jkys.consult.request.OrderPayRequest;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -43,6 +47,15 @@ public class processFlowTest extends BaseTest {
   }
 
   /**
+   * 正常支付
+   */
+  @Test
+  public void testProcessing() {
+    testCreateConsult();
+    testPayOrder();
+  }
+
+  /**
    * 正常完结
    */
   @Test
@@ -76,10 +89,14 @@ public class processFlowTest extends BaseTest {
    */
   @Test
   public void testCreateConsult() {
-    long doctorId = 1L;
-    long patientId = 2L;
-    int consultType = 1;
-    consultId = consultLogic.createConsult(doctorId, patientId, consultType);
+    ConsultInfoRequest request = ConsultInfoRequest.builder()
+        .doctorId(doctorId)
+        .patientId(patientId)
+        .consultType(consultType)
+        .mallOrderId(mallOrderId)
+        .build();
+    ConsultInfoResponse response = consultInfoRpcService.createConsult(request);
+    String consultId = response.getConsultId();
     // TODO ---- orderId = consultId; ------> todoByliming
     orderId = consultId;
     boolean result = Optional.ofNullable(consultId).isPresent();
@@ -113,13 +130,14 @@ public class processFlowTest extends BaseTest {
         .mock(true)
         .orderId(orderId)
         // TODO ----  ------> todoByliming
-//        .doctorId()
-//        .patientId()
-//        .client()
+//        .doctorId(doctorId)
+        .patientId(patientId)
+        .client("app")
 //        .reTry()
         .build();
-    boolean result = orderInfoRpcService.payOrder(request);
-    Assert.assertEquals(result, true);
+    PayOrderResponse result = orderInfoRpcService.payOrder(request);
+    Gson gson = new Gson();
+    System.out.println(gson.toJson(result));
   }
 
   /**

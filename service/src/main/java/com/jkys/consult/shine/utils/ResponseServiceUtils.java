@@ -1,6 +1,6 @@
 package com.jkys.consult.shine.utils;
 
-import com.jkys.consult.shine.constants.Constants;
+import com.jkys.consult.common.constants.Constants;
 import com.jkys.consult.shine.response.SimpleResponse;
 
 /**

@@ -1,4 +1,4 @@
-package com.jkys.consult.common;
+package com.jkys.consult.common.component;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.IdType;

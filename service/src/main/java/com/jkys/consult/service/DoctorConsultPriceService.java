@@ -2,8 +2,6 @@ package com.jkys.consult.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jkys.consult.common.bean.DoctorConsultPrice;
-import com.jkys.consult.model.CoinOrderModel;
-import java.util.List;
 
 public interface DoctorConsultPriceService extends IService<DoctorConsultPrice> {
 
@@ -13,5 +11,5 @@ public interface DoctorConsultPriceService extends IService<DoctorConsultPrice> 
 
   Integer addAdvisoryPrice(Long doctorId, Integer price);
 
-  List<CoinOrderModel> batchQueryAdvisoryPrice(List<Long> list);
+//  List<CoinOrderModel> batchQueryAdvisoryPrice(List<Long> list);
 }

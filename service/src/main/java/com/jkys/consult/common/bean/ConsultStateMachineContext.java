@@ -1,7 +1,7 @@
 package com.jkys.consult.common.bean;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.common.BaseEntity;
+import com.jkys.consult.common.component.BaseEntity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

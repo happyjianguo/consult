@@ -18,18 +18,18 @@ public class ConsultStateLogic {
   private ConsultPersistStateMachineHandler handler;
 
   @Autowired
-  ConsultService ConsultService;
+  ConsultService consultService;
 
   public boolean handleAction(ConsultEvents event, Consult consult) {
     String consultId = consult.getConsultId();
-    Consult result = ConsultService.selectByConsultId(consultId);
+    Consult result = consultService.selectByConsultId(consultId);
 
     return handleState(event, result);
   }
 
   public boolean handleAction(ConsultEvents event, Order order) {
     String consultId = order.getConsultId();
-    Consult result = ConsultService.selectByConsultId(consultId);
+    Consult result = consultService.selectByConsultId(consultId);
 
     return handleState(event, result);
   }

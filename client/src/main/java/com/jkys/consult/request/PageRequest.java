@@ -1,7 +1,7 @@
 package com.jkys.consult.request;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.jkys.consult.common.BasePage;
+import com.jkys.consult.common.component.BasePage;
 import com.jkys.phobos.exception.ServiceError;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;

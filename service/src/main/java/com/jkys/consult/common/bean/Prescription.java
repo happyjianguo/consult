@@ -3,7 +3,7 @@ package com.jkys.consult.common.bean;
 import static com.jkys.consult.statemachine.enums.PrescriptionStatus.INIT;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.common.BaseEntity;
+import com.jkys.consult.common.component.BaseEntity;
 import com.jkys.consult.statemachine.enums.PrescriptionStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

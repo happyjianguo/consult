@@ -1,7 +1,5 @@
 package com.jkys.consult.shine.mapper;
 
-import com.jkys.consult.model.CoinOrderModel;
-import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -26,9 +24,9 @@ public interface DoctorAdvisoryPriceMapper {
     Integer addAdvisoryPrice(@Param("doctorId") Long doctorId, @Param("price") Integer price);
 
     /** 批量查询医生咨询价格*/
-    @Select("<script>" +
-            "select doctor_id as id, advisory_price as price from `doctor_advisory_price` where doctor_id in " +
-            " <foreach collection=\"list\" item=\"item\" open=\"(\" separator=\",\" close=\")\">#{item}</foreach>" +
-            "</script>")
-    List<CoinOrderModel> batchQueryAdvisoryPrice(@Param("list") List<Long> list);
+//    @Select("<script>" +
+//            "select doctor_id as id, advisory_price as price from `doctor_advisory_price` where doctor_id in " +
+//            " <foreach collection=\"list\" item=\"item\" open=\"(\" separator=\",\" close=\")\">#{item}</foreach>" +
+//            "</script>")
+//    List<CoinOrderModel> batchQueryAdvisoryPrice(@Param("list") List<Long> list);
 }

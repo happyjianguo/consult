@@ -2,7 +2,7 @@ package com.jkys.consult.shine.service;
 
 import com.jkys.consult.shine.bean.DoctorAdvisoryPrice;
 import com.jkys.consult.shine.bean.SystemSettingModel;
-import com.jkys.consult.shine.constants.Constants;
+import com.jkys.consult.common.constants.Constants;
 import com.jkys.consult.shine.mapper.SystemSettingMapper;
 import com.jkys.consult.shine.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;

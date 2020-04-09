@@ -1,4 +1,4 @@
-package com.jkys.consult.enums;
+package com.jkys.consult.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import java.util.Arrays;

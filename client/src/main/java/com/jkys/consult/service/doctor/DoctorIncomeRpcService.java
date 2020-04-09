@@ -2,7 +2,6 @@ package com.jkys.consult.service.doctor;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import com.jkys.consult.reponse.DoctorConsultPriceResponse;
 import com.jkys.consult.reponse.DoctorIncomeResponse;
 import com.jkys.consult.request.DoctorPriceRequest;
 import com.jkys.consult.request.PageRequest;
@@ -25,8 +24,9 @@ public interface DoctorIncomeRpcService {
 
     /**
      * 查询医生咨询定价
+     * @return
      */
-    DoctorConsultPriceResponse getDoctorPrice(@JsonRpcParam("doctorId") Long doctorId);
+    Integer getDoctorPrice(@JsonRpcParam("doctorId") Long doctorId);
 
     /**
      * 查询医生咨询定价

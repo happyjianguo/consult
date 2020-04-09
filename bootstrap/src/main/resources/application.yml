@@ -1,6 +1,6 @@
 logging:
   level:
-    com.jkys.consult.mapper: DEBUG
+    com.jkys.consult.infrastructure.db.mapper: info
 
 debug: false
 

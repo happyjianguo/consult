@@ -1,4 +1,4 @@
-package com.jkys.consult.shine.enums;
+package com.jkys.consult.common.component;
 
 public interface ExceptionMessage {
   /**咨询订单**/

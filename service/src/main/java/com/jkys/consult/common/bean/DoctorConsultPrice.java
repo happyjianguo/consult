@@ -2,7 +2,7 @@ package com.jkys.consult.common.bean;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.jkys.consult.common.BaseEntity;
+import com.jkys.consult.common.component.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

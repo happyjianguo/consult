@@ -1,7 +1,10 @@
 package com.jkys.consult.statemachine.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import java.util.Arrays;
+import java.util.Optional;
 import lombok.Getter;
+import org.apache.commons.lang3.StringUtils;
 
 public enum OrderStatus {
   INIT(1, "初始"),
@@ -28,4 +31,33 @@ public enum OrderStatus {
     this.code = code;
     this.status = status;
   }
+
+  /**
+   * status-->statusEnum
+   */
+  public static OrderStatus getByStatus(String status) {
+    Optional<OrderStatus> statusEnumOptional = Arrays.asList(OrderStatus.values())
+        .parallelStream()
+        .filter(statusEnum -> StringUtils.equalsIgnoreCase(status, statusEnum.getStatus()))
+        .findAny();
+    if (statusEnumOptional.isPresent()) {
+      return statusEnumOptional.get();
+    }
+    return null;
+  }
+
+  /**
+   * code-->statusEnum
+   */
+  public static OrderStatus getByCode(int code) {
+    Optional<OrderStatus> statusEnumOptional = Arrays.asList(OrderStatus.values())
+        .parallelStream()
+        .filter(statusEnum -> code == statusEnum.getCode())
+        .findAny();
+    if (statusEnumOptional.isPresent()) {
+      return statusEnumOptional.get();
+    }
+    return null;
+  }
+
 }

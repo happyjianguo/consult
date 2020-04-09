@@ -8,26 +8,26 @@
       logs
     </property>
     <property name="file_name">
-      prescription-risk.log
+      consult-service.log
     </property>
     <property name="rolling_file_name">
-      logs\archive\prescription-risk-%d{yyyy-MM-dd}-%i.log.gz
+      logs\archive\consult-service-%d{yyyy-MM-dd}-%i.log.gz
     </property>
     <property name="error_file_name">
-      prescription-risk-error.log
+       consult-service-error.log
     </property>
     <property name="error_rolling_file_name">
-      logs\archive\prescription-risk_error-%d{yyyy-MM-dd}-%i.log.gz
+      logs\archive\consult-service_error-%d{yyyy-MM-dd}-%i.log.gz
     </property>
     <property name="every_file_size">10MB</property><!-- 日志切割的最小单位 -->
-    <property name="output_log_level">debug</property><!-- 日志输出级别 -->
+    <property name="output_log_level">info</property><!-- 日志输出级别 -->
   </Properties>
 
   <Appenders>
     <!--这个输出控制台的配置-->
     <Console name="Console" target="SYSTEM_OUT">
       <!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）-->
-      <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>
+<!--      <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY"/>-->
       <PatternLayout pattern="${log_pattern}" />
     </Console>
 
@@ -68,12 +68,17 @@
     <logger name="java.sql" level="debug" additivity="false">
       <appender-ref ref="Console"/>
     </logger>
+
     <!--建立一个默认的root的logger，需要在root的level中指定输出的级别，-->
     <root level="${output_log_level}">
       <appender-ref ref="RollingFile"/>
       <appender-ref ref="RollingErrorFile"/>
       <appender-ref ref="Console"/>
     </root>
-
+    <!--AsyncLogger :异步日志,LOG4J有三种日志模式,全异步日志,混合模式,同步日志,性能从高到底,线程越多效率越高,也可以避免日志卡死线程情况发生-->
+    <!--additivity="false" : additivity设置事件是否在root logger输出，为了避免重复输出，可以在Logger 标签下设置additivity为”false”-->
+    <AsyncLogger name="AsyncLogger" level="${output_log_level}" includeLocation="true" additivity="false">
+      <appender-ref ref="RollingErrorFile"/>
+    </AsyncLogger>
   </Loggers>
 </Configuration>

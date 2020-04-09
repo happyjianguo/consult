@@ -1,5 +1,6 @@
 package com.jkys.consult.common.bean;
 
 public enum GeneralEventType {
-  SEND;
+  SEND_FINISH,
+  SEND_START;
 }

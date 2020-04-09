@@ -1,14 +1,28 @@
 package com.jkys.consult.statemachine;
 
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.statemachine.enums.OrderEvents.CANCEL;
+import static com.jkys.consult.statemachine.enums.OrderEvents.CREATE;
+import static com.jkys.consult.statemachine.enums.OrderEvents.PAY;
+import static com.jkys.consult.statemachine.enums.OrderEvents.REFUND;
+import static com.jkys.consult.statemachine.enums.OrderStatus.CANCELED;
+import static com.jkys.consult.statemachine.enums.OrderStatus.INIT;
+import static com.jkys.consult.statemachine.enums.OrderStatus.PAYED;
+import static com.jkys.consult.statemachine.enums.OrderStatus.REFUNDED;
+import static com.jkys.consult.statemachine.enums.OrderStatus.WAIT_FOR_PAY;
+
+import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.statemachine.constant.Constants;
 import com.jkys.consult.statemachine.enums.OrderEvents;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import java.util.EnumSet;
 import java.util.Optional;
 import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
+import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.EnumStateMachineConfigurerAdapter;
@@ -26,6 +40,7 @@ import org.springframework.statemachine.transition.Transition;
 @Configuration
 //@EnableStateMachine(name = "orderStateMachine")
 @EnableStateMachineFactory(name = "orderStatusMachineFactory")
+@Slf4j
 public class OrderStatusMachineConfig extends
     EnumStateMachineConfigurerAdapter<OrderStatus, OrderEvents> {
 
@@ -39,6 +54,9 @@ public class OrderStatusMachineConfig extends
 
   @Resource(name = "consultStartAction")
   private Action<OrderStatus, OrderEvents> consultStartAction;
+
+  @Resource(name = "orderAutoPayAction")
+  private Action<OrderStatus, OrderEvents> orderAutoPayAction;
 
   @Resource(name = "consultCancelAction")
   private Action<OrderStatus, OrderEvents> consultCancelAction;
@@ -61,7 +79,8 @@ public class OrderStatusMachineConfig extends
       throws Exception {
     states
         .withStates()
-        .initial(OrderStatus.INIT)
+        .initial(INIT)
+//        .choice(PAYING)
         .states(EnumSet.allOf(OrderStatus.class));
   }
 
@@ -72,27 +91,40 @@ public class OrderStatusMachineConfig extends
   public void configure(StateMachineTransitionConfigurer<OrderStatus, OrderEvents> transitions)
       throws Exception {
     transitions
-        .withExternal().source(OrderStatus.INIT).target(OrderStatus.WAIT_FOR_PAY)
-        .event(OrderEvents.CREATE)
+        .withExternal().source(INIT).target(WAIT_FOR_PAY)
+        .event(CREATE)
+        .action(orderAutoPayAction, orderErrorHandlerAction)
 //        .and()
-//        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.PAYING)
-//        .event(OrderEvents.PAY)
+//        .withExternal().source(WAIT_FOR_PAY).target(PAYING)
+//        .event(PAY)
+//        .and()
+//        .withChoice()
+//        .source(PAYING)
+//        .first(PAYED, new PayChoiceGuard(), consultStartAction, orderErrorHandlerAction)
+//        .last(WAIT_FOR_PAY)
         .and()
-        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.PAYED)
-        .event(OrderEvents.PAY)
+        .withExternal().source(WAIT_FOR_PAY).target(PAYED)
+        .event(PAY)
         .action(consultStartAction, orderErrorHandlerAction)
         .and()
-        .withExternal().source(OrderStatus.WAIT_FOR_PAY).target(OrderStatus.CANCELED)
-        .event(OrderEvents.CANCEL)
+        .withExternal().source(WAIT_FOR_PAY).target(CANCELED)
+        .event(CANCEL)
         .action(consultCancelAction, orderErrorHandlerAction)
         .and()
-        .withExternal().source(OrderStatus.PAYED).target(OrderStatus.REFUNDED)
-        .event(OrderEvents.REFUND);
+        .withExternal().source(PAYED).target(REFUNDED)
+        .event(REFUND);
   }
 
   @Bean(name = "orderStateListener")
   public StateMachineListener<OrderStatus, OrderEvents> listener() {
     return new StateMachineListenerAdapter<OrderStatus, OrderEvents>() {
+
+      @Override
+      public void stateMachineError(StateMachine<OrderStatus, OrderEvents> stateMachine, Exception exception) {
+        log.error("orderStateListener stateMachine execute error = ", exception);
+        throw new ServerException(SERVER_ERROR, "状态机异常");
+      }
+
       @Override
       public void transition(Transition<OrderStatus, OrderEvents> transition) {
         System.out.println("order move from:{" + ofNullableState(transition.getSource()) + "} " +

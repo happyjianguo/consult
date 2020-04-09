@@ -2,8 +2,11 @@ package com.jkys.consult.service.consult;
 
 import com.googlecode.jsonrpc4j.JsonRpcParam;
 import com.googlecode.jsonrpc4j.JsonRpcService;
-import com.jkys.consult.common.BasePage;
+import com.jkys.consult.common.component.BasePage;
 import com.jkys.consult.model.ConsultInfoModel;
+import com.jkys.consult.reponse.ConsultInfoResponse;
+import com.jkys.consult.request.ConsultInfoRequest;
+import com.jkys.consult.request.PageRequest;
 import com.jkys.phobos.annotation.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -13,21 +16,20 @@ import org.springframework.validation.annotation.Validated;
 public interface ConsultInfoRpcService {
 
   //  @JsonRpcMethod("ConsultInfoRpcService.createConsult")
-  String createConsult(@JsonRpcParam("doctorId") Long doctorId,
-      @JsonRpcParam("patientId") Long patientId, @JsonRpcParam("consultType") Integer consultType);
+  ConsultInfoResponse createConsult(@JsonRpcParam("request") ConsultInfoRequest request);
 
 //  Boolean changeDoctor(String consultId);
 
   ConsultInfoModel searchConsultDetail(@JsonRpcParam("consultId") String consultId);
 
-  BasePage<ConsultInfoModel> searchConsultList(@JsonRpcParam("patientId") Long patientId,
-      @JsonRpcParam("consultType") String consultType,
-      @JsonRpcParam("consultState") String consultState);
+  BasePage<ConsultInfoModel> searchConsultList(@JsonRpcParam("pageRequest") PageRequest<ConsultInfoRequest> pageRequest);
 
-  String currentConsultState(@JsonRpcParam("doctorId") Long doctorId,
+  ConsultInfoResponse currentConsultModelState(@JsonRpcParam("doctorId") Long doctorId,
       @JsonRpcParam("patientId") Long patientId);
 
   Boolean completeConsult(@JsonRpcParam("consultId") String consultId);
+
+  ConsultInfoResponse currentConsultModelState(Long doctorId, Long patientId, Integer consultType);
 
   Boolean checkWhetherResponseIn12hours(@JsonRpcParam("doctorId") Long doctorId, @JsonRpcParam("patientId") Long patientId);
 }

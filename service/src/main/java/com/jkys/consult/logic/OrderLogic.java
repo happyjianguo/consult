@@ -2,6 +2,7 @@ package com.jkys.consult.logic;
 
 import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.Order;
+import com.jkys.consult.reponse.PayOrderResponse;
 import com.jkys.consult.request.OrderPayRequest;
 
 public interface OrderLogic {
@@ -20,6 +21,6 @@ public interface OrderLogic {
 
   Boolean refundOrder(String consultId);
 
-  Boolean payOrder(OrderPayRequest request);
+  PayOrderResponse payOrder(OrderPayRequest request);
 
 }

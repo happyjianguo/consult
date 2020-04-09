@@ -1,6 +1,7 @@
 package com.jkys.consult.logic.impl;
 
-import static com.jkys.consult.common.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.component.CodeMsg.SERVER_ERROR;
+import static com.jkys.consult.common.component.ExceptionMessage.COIN_FAIL;
 import static com.jkys.consult.statemachine.enums.OrderEvents.CANCEL;
 import static com.jkys.consult.statemachine.enums.OrderEvents.PAY;
 
@@ -8,21 +9,25 @@ import com.jkys.consult.common.bean.Consult;
 import com.jkys.consult.common.bean.Order;
 import com.jkys.consult.exception.ServerException;
 import com.jkys.consult.infrastructure.db.mybatisplus.component.CustomSequenceGenerator;
-import com.jkys.consult.infrastructure.rpc.usercenter.DoctorRemoteRpcService;
+import com.jkys.consult.infrastructure.rpc.coincenter.CoinCenterRemoteRpcService;
+import com.jkys.consult.logic.DoctorIncomeLogic;
 import com.jkys.consult.logic.OrderLogic;
 import com.jkys.consult.logic.OrderStateLogic;
 import com.jkys.consult.logic.PayInfoLogic;
+import com.jkys.consult.reponse.PayOrderResponse;
+import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.consult.service.ConsultService;
 import com.jkys.consult.service.OrderService;
-import com.jkys.consult.request.OrderPayRequest;
 import com.jkys.consult.statemachine.enums.OrderEvents;
 import com.jkys.consult.statemachine.enums.OrderStatus;
 import javax.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.statemachine.persist.StateMachinePersister;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class OrderLogicImpl implements OrderLogic {
 
   @Resource(name = "orderPersister")
@@ -42,12 +47,15 @@ public class OrderLogicImpl implements OrderLogic {
   @Autowired
   PayInfoLogic payInfoLogic;
 
+  @Resource
+  private CoinCenterRemoteRpcService coinCenterRemoteRpcService;
+
   @Autowired
   private CustomSequenceGenerator sequenceGenerator;
 
   // TODO ---- FAKE ------> todoByliming
   @Autowired
-  DoctorRemoteRpcService doctorRemoteRpcService;
+  DoctorIncomeLogic doctorIncomeLogic;
 
   @Override
   public Boolean createOrder(Order order) {
@@ -63,7 +71,7 @@ public class OrderLogicImpl implements OrderLogic {
   public Boolean cancelOrder(Order order) {
     try {
       orderStateLogic.handleAction(CANCEL, order);
-    }catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
     }
@@ -83,10 +91,12 @@ public class OrderLogicImpl implements OrderLogic {
   @Override
   public Boolean refundOrder(String consultId) {
     try {
+      Order order = orderService.selectByConsultId(consultId);
       // TODO ---- 调用云币中心退款 ------> todoByliming
-
-
-    }catch (Exception e){
+      if (!coinCenterRemoteRpcService.isIncreaseCoin(order)) {
+        throw new ServerException(SERVER_ERROR, COIN_FAIL);
+      }
+    } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
     }
@@ -94,18 +104,22 @@ public class OrderLogicImpl implements OrderLogic {
   }
 
   @Override
-  public Boolean payOrder(OrderPayRequest request) {
-    Order order = orderService.selectByOrderId(request.getOrderId());
+  public PayOrderResponse payOrder(OrderPayRequest request) {
+    PayOrderResponse response;
     try {
-      // TODO ---- 调用云币中心付款 ------> todoByliming
-      //  下面操作需要同步，并且捕捉异常
-      payInfoLogic.payGo(request);
-      orderStateLogic.handleAction(PAY, order);
-    }catch (Exception e){
+      // TODO ---- 是否异步，待定 ------> todoByliming
+      response = payInfoLogic.payGo(request);
+      if (response.getCoinPay() == 1) {
+        orderStateLogic.handleAction(PAY,
+            Order.builder()
+                .orderId(request.getOrderId())
+                .build());
+      }
+    } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
     }
-    return true;
+    return response;
   }
 
   @Override
@@ -117,7 +131,7 @@ public class OrderLogicImpl implements OrderLogic {
       // TODO ---- 获取医生价格 ------> todoByliming
       Consult consult = consultService.selectByConsultId(consultId);
       Long doctorId = consult.getDoctorId();
-      int price = doctorRemoteRpcService.getDoctorPrice(doctorId);
+      int price = doctorIncomeLogic.getDoctorPrice(doctorId);
 
       // TODO ---- 是否要生成orderID ------> todoByliming
 //      final String orderId = sequenceGenerator.genBizCode();
@@ -142,7 +156,7 @@ public class OrderLogicImpl implements OrderLogic {
 //    boolean sendResult = stateMachine.sendEvent(eventMsg);
 
 //      orderStateLogic.handleAction(CREATE, order);
-    }catch (Exception e){
+    } catch (Exception e) {
       e.printStackTrace();
       throw new ServerException(SERVER_ERROR, e.getMessage());
     }
