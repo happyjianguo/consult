@@ -13,7 +13,7 @@ import com.baomidou.mybatisplus.generator.config.po.TableInfo;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 public class MybatisCodeGenerator {
 

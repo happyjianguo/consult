@@ -3,16 +3,23 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+<!--  <parent>-->
+<!--    <groupId>com.jkys</groupId>-->
+<!--    <artifactId>parent</artifactId>-->
+<!--    <version>1.0.4</version>-->
+<!--  </parent>-->
   <parent>
-    <groupId>com.jkys</groupId>
-    <artifactId>parent</artifactId>
-    <version>1.0.4</version>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.1.0.RELEASE</version>
+    <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.jkys</groupId>
+  <groupId>com.jkys.consult</groupId>
   <artifactId>consult-service</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
+
   <modules>
     <module>service</module>
     <module>client</module>
@@ -32,26 +39,6 @@
   -->
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>service</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>client</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>api</artifactId>
-        <version>1.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>bootstrap</artifactId>
-        <version>1.0.0</version>
-      </dependency>
       <!--二方依赖-->
       <dependency>
         <groupId>com.jkys.servicekit</groupId>
@@ -94,14 +81,7 @@
         <version>4.0.1</version>
         <scope>provided</scope>
       </dependency>
-      <!--spring-->
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-dependencies</artifactId>
-        <version>2.1.0.RELEASE</version><!-- 依赖spring版本为5.1.2.RELEASE -->
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
+
       <!--MySQL driver-->
       <dependency>
         <groupId>mysql</groupId>
@@ -189,16 +169,16 @@
         <version>4.12</version>
       </dependency>
 
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-test</artifactId>
-        <version>${springboot.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-test-autoconfigure</artifactId>
-        <version>${springboot.version}</version>
-      </dependency>
+<!--      <dependency>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-test</artifactId>-->
+<!--        <version>${springboot.version}</version>-->
+<!--      </dependency>-->
+<!--      <dependency>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-test-autoconfigure</artifactId>-->
+<!--        <version>${springboot.version}</version>-->
+<!--      </dependency>-->
 
       <dependency>
         <groupId>com.google.code.gson</groupId>
@@ -226,7 +206,14 @@
         <artifactId>commons-collections4</artifactId>
         <version>4.1</version>
       </dependency>
-
+      <!--spring-->
+<!--      <dependency>-->
+<!--        <groupId>org.springframework.boot</groupId>-->
+<!--        <artifactId>spring-boot-dependencies</artifactId>-->
+<!--        <version>${springboot.version}</version>&lt;!&ndash; 依赖spring版本为5.1.2.RELEASE &ndash;&gt;-->
+<!--        <type>pom</type>-->
+<!--        <scope>import</scope>-->
+<!--      </dependency>-->
 <!--      <dependency>-->
 <!--        <groupId>tk.mybatis</groupId>-->
 <!--        <artifactId>mapper</artifactId>-->

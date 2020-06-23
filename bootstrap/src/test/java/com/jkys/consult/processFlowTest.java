@@ -12,10 +12,10 @@ import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
@@ -36,13 +36,13 @@ public class processFlowTest extends BaseTest {
 
   private static Stopwatch stopwatch;
 
-  @BeforeEach
-  void setUp() {
+  @BeforeClass
+  public static void setUp() {
     stopwatch = Stopwatch.createStarted();
   }
 
-  @AfterAll
-  static void afterAll() {
+  @AfterClass
+  public static void afterAll() {
     log.error(stopwatch.toString());
   }
 
@@ -99,6 +99,7 @@ public class processFlowTest extends BaseTest {
     String consultId = response.getConsultId();
     // TODO ---- orderId = consultId; ------> todoByliming
     orderId = consultId;
+    this.consultId = consultId;
     boolean result = Optional.ofNullable(consultId).isPresent();
     Assert.assertEquals(result, true);
   }

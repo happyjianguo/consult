@@ -7,7 +7,7 @@ import com.jkys.consult.base.BaseTest;
 import com.jkys.consult.common.bean.User;
 import com.jkys.consult.infrastructure.db.mapper.UserMapper;
 import java.util.Collections;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ArTest extends BaseTest {

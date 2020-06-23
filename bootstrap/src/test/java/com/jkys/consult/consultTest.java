@@ -13,9 +13,9 @@ import com.jkys.consult.request.PageRequest;
 import com.jkys.consult.service.consult.ConsultInfoRpcService;
 import com.jkys.consult.service.order.OrderInfoRpcService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Slf4j
@@ -34,13 +34,13 @@ public class consultTest extends BaseTest {
 
   Gson gson = new Gson();
 
-  @BeforeEach
-  void setUp() {
+  @BeforeClass
+  public static void setUp() {
     stopwatch = Stopwatch.createStarted();
   }
 
-  @AfterAll
-  static void afterAll() {
+  @AfterClass
+  public static void afterAll() {
     log.error(stopwatch.toString());
   }
 

@@ -7,9 +7,9 @@ import com.jkys.consult.infrastructure.rpc.chat.ChatMessageService;
 import com.jkys.consult.shine.service.MqServer;
 import javax.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.JedisPool;
 
@@ -27,13 +27,13 @@ public class RedisTest extends BaseTest {
 
   private static Stopwatch stopwatch;
 
-  @BeforeEach
-  void setUp() {
+  @BeforeClass
+  public static void setUp() {
     stopwatch = Stopwatch.createStarted();
   }
 
-  @AfterAll
-  static void afterAll() {
+  @AfterClass
+  public static void afterAll() {
     log.error(stopwatch.toString());
   }
 

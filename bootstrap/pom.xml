@@ -3,34 +3,35 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>com.jkys</groupId>
+    <groupId>com.jkys.consult</groupId>
     <artifactId>consult-service</artifactId>
     <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>bootstrap</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
+      <groupId>com.jkys.consult</groupId>
       <!--
       如果需要处理HTTP请求，artifactId为web。
       如果只对外提供RPC服务，artifactId为service。
       -->
       <artifactId>api</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
       <!--<artifactId>service</artifactId>-->
     </dependency>
 
 
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>RELEASE</version>
-      <scope>test</scope>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.junit.jupiter</groupId>-->
+<!--      <artifactId>junit-jupiter</artifactId>-->
+<!--      <version>RELEASE</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
 
     <!--Assertions.assertThat-->
     <dependency>
@@ -39,14 +40,14 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-test</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-test-autoconfigure</artifactId>
-    </dependency>
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-test</artifactId>-->
+<!--    </dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>org.springframework.boot</groupId>-->
+<!--      <artifactId>spring-boot-test-autoconfigure</artifactId>-->
+<!--    </dependency>-->
     <!-- test dependencies -->
     <dependency>
       <groupId>org.springframework.boot</groupId>

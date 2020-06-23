@@ -1,10 +1,16 @@
 package com.jkys.consult.infrastructure.mapstrut.demo;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
-@ToString
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class GoodInfoDTO {
   private GoodInfo goodInfo;
   private GoodType goodType;
